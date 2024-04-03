@@ -5,10 +5,17 @@ import {
   getUserWithId,
   getProfilePic,
   editProfile,
-  editPassword,
   getUserWithEmail,
 } from "../controllers/userController.js";
-import { createEvent, getEventWithId } from "../controllers/eventController.js";
+import {
+  createEvent,
+  getEventWithId,
+  registerForEvent,
+  unregisterForEvent,
+  markUserAsAttended,
+  markUserAsUnattended,
+  deleteEvent,
+} from "../controllers/eventController.js";
 
 const APIrouter = express.Router();
 
@@ -24,8 +31,6 @@ APIrouter.get("/getProfilePic", getProfilePic);
 
 APIrouter.put("/editProfile", editProfile);
 
-APIrouter.put("/editPassword", editPassword);
-
 APIrouter.get("/getUserWithEmail", getUserWithEmail);
 
 //////////////////////////////////////////////////  event methods ///////////////////////////////////////////////////
@@ -33,5 +38,15 @@ APIrouter.get("/getUserWithEmail", getUserWithEmail);
 APIrouter.post("/createEvent", createEvent);
 
 APIrouter.get("/getEventWithId", getEventWithId);
+
+APIrouter.put("/registerForEvent", registerForEvent);
+
+APIrouter.put("/unregisterForEvent", unregisterForEvent);
+
+APIrouter.put("/markUserAsAttended", markUserAsAttended);
+
+APIrouter.put("/markUserAsUnattended", markUserAsUnattended);
+
+APIrouter.delete("/deleteEvent", deleteEvent);
 
 export { APIrouter };
