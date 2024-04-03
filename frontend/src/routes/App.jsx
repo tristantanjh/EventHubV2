@@ -2,59 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Button, Typography, Box, Grid } from "@mui/material";
 import theme from "../themes/theme";
 import logo from "../assets/logo.png";
-import { useNavigate  } from "react-router-dom";
-
-const slogans = [
-  { bold: "Create Events", regular: "In An Instant" },
-  { bold: "Discover Events", regular: "For Every Occasion" },
-  { bold: "Connect and Interact", regular: "With Like-Minded People" },
-  { bold: "EventHub", regular: "Elevating Occasions, Creating Connections" },
-];
+import ReactTypingEffect from "react-typing-effect";
+import { useNavigate } from "react-router-dom";
 
 export default function App() {
-  const [currentSloganIndex, setCurrentSloganIndex] = useState(0);
-  const [typingBoldText, setTypingBoldText] = useState("");
-  const [typingRegularText, setTypingRegularText] = useState("");
-  const { bold, regular } = slogans[currentSloganIndex];
   const navigate = useNavigate();
-
-  useEffect(() => {
-    let boldIndex = 0;
-    let regularIndex = 0;
-    let timer;
-
-    const typeText = () => {
-      if (boldIndex < bold.length - 1) {
-        if (boldIndex === 0) {
-          setTypingBoldText(bold[0]);
-        } else if (boldIndex === 2) {
-          setTypingBoldText(bold[0] + bold[1] + bold[2]);
-        } 
-
-          setTypingBoldText((prevText) => prevText + bold[boldIndex]);
-        boldIndex++;
-        timer = setTimeout(typeText, 100); // Type next character after 100ms
-      } else if (regularIndex < regular.length - 1) {
-        if (regularIndex === 0) setTypingRegularText(regular[0]);
-        setTypingRegularText((prevText) => prevText + regular[regularIndex]);
-        regularIndex++;
-        timer = setTimeout(typeText, 100); // Type next character after 100ms
-      } else if (currentSloganIndex != slogans.length - 1) {
-        clearTimeout(timer); // Clear timer when text is fully typed
-        setTimeout(() => {
-          setTypingBoldText("");
-          setTypingRegularText("");
-          setCurrentSloganIndex((prevIndex) =>
-            prevIndex === slogans.length - 1 ? 0 : prevIndex + 1
-          );
-        }, 1000); // Wait 1 second before moving to the next slogan
-      }
-    };
-
-    typeText();
-
-    return () => clearTimeout(timer); // Cleanup function to clear timer
-  }, [currentSloganIndex]);
 
   return (
     <Grid
@@ -94,29 +46,58 @@ export default function App() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "left",
+            marginLeft: "20px",
           }}
         >
-          <Typography
-            variant="h3"
-            color="primary"
-            sx={{
-              marginLeft: "20px",
-              fontWeight: "bold",
-              textAlign: "left",
+          <ReactTypingEffect
+            text={[
+              "Create Events\nIn An Instant",
+              "Discover Events\nFor Every Occasion",
+              "Connect and Interact\nWith Like-Minded People",
+              "EventHub\nElevating Occasions, Creating Connections",
+            ]}
+            speed={70}
+            typingDelay={0}
+            eraseSpeed={20}
+            eraseDelay={2000}
+            displayTextRenderer={(text, i) => {
+              const splitArray = text.split("\n");
+              return (
+                <div>
+                  <h1>
+                    {splitArray[0]?.split("").map((char, i) => (
+                      <span
+                        key={`${i}-firstHalf`}
+                        style={{
+                          fontFamily: theme.typography.fontFamily,
+                          fontWeight: "bold",
+                          fontSize: "3rem",
+                          color: theme.palette.primary.main,
+                        }}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </h1>
+                  <h2>
+                    {splitArray[1]?.split("").map((char, i) => (
+                      <span
+                        key={`${i}-secondHalf`}
+                        style={{
+                          fontFamily: theme.typography.fontFamily,
+                          fontWeight: "normal",
+                          fontSize: "2.5rem",
+                          color: theme.palette.primary.main,
+                        }}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </h2>
+                </div>
+              );
             }}
-          >
-            {typingBoldText}
-          </Typography>
-          <Typography
-            color="primary"
-            sx={{
-              marginLeft: "20px",
-              textAlign: "left",
-              fontSize: "2.5rem",
-            }}
-          >
-            {typingRegularText}
-          </Typography>
+          />
         </Box>
       </Grid>
       <Grid
@@ -151,20 +132,20 @@ export default function App() {
           <Button
             variant="contained"
             color="secondary"
+            onClick={() => navigate("/login")}
             sx={{
               width: "150px",
             }}
-            onClick={() => navigate("/login")} 
           >
             Log In
           </Button>
           <Button
             variant="contained"
             color="secondary"
+            onClick={() => navigate("/register")}
             sx={{
               width: "150px",
             }}
-            onClick={() => navigate("/register")} 
           >
             Sign Up
           </Button>
