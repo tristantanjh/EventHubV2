@@ -1,49 +1,37 @@
 import express from "express";
-import { Company } from "../model/model.js";
+import {
+  createUser,
+  getEmail,
+  getUserWithId,
+  getProfilePic,
+  editProfile,
+  editPassword,
+  getUserWithEmail,
+} from "../controllers/userController.js";
+import { createEvent, getEventWithId } from "../controllers/eventController.js";
 
 const APIrouter = express.Router();
 
-/**
- * getAllCompany method
- * @return {Array} found
- */
-APIrouter.get("/getAllCompany", (req, res) => {
-  Company.find()
-    .then((found) => {
-      res.send(found);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send(err.message);
-    });
-});
+//////////////////////////////////////////////////  user methods ///////////////////////////////////////////////////
 
-/**
- * addCompany method
- * @param {String} company_name
- * @param {String} company_email
- * @return {String} result
- */
-APIrouter.post("/addCompany", (req, res) => {
-  const newCompany = new Company({
-    company_name: req.body.company_name,
-    company_email: req.body.company_email,
-  });
+APIrouter.post("/createUser", createUser);
 
-  newCompany
-    .save()
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send(err.message);
-    });
-});
+APIrouter.get("/getEmail", getEmail);
 
-//test Method
-APIrouter.get("/test", (req, res) => {
-  res.send("test");
-});
+APIrouter.get("/getUserWithId", getUserWithId);
+
+APIrouter.get("/getProfilePic", getProfilePic);
+
+APIrouter.put("/editProfile", editProfile);
+
+APIrouter.put("/editPassword", editPassword);
+
+APIrouter.get("/getUserWithEmail", getUserWithEmail);
+
+//////////////////////////////////////////////////  event methods ///////////////////////////////////////////////////
+
+APIrouter.post("/createEvent", createEvent);
+
+APIrouter.get("/getEventWithId", getEventWithId);
 
 export { APIrouter };
