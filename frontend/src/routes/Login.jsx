@@ -18,6 +18,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../hooks/AuthProvider";
 import axios from "axios";
 import Copyright from "../components/Copyright.jsx";
+import CustomButton from "../components/CustomButton.jsx";
 import theme from "../themes/theme.js";
 
 export default function Login() {
@@ -205,63 +206,27 @@ export default function Login() {
             <FormHelperText error>{errors.password}</FormHelperText>
           )}
         </FormControl>
-        <Button
+        <CustomButton
           type="submit"
-          fullWidth
-          variant="contained"
-          
           disabled={!formData.email || !formData.password}
-          sx={{
-            mt: 3,
-            mb: 2,
-            py: isMobile ? 1.5 : 1,
-            fontFamily: "open sans, sans-serif",
-            borderRadius: "30px",
-            // backgroundColor: theme.palette.background.secondary,
-            "&:hover": { backgroundColor: theme.palette.background.tertiary },
-            position: isMobile ? "fixed" : "none", // Position fixed on mobile
-            bottom: isMobile ? "20px" : "auto", // Adjust bottom position on mobile
-            left: isMobile ? "50%" : "0",
-            transform: isMobile ? "translateX(-50%)" : "0",
-            width: isMobile ? "calc(100% - 40px)" : "100%", // Adjust width on mobile
-            maxWidth: isMobile ? "400px" : "auto", // Max width of the button
-            marginLeft: "auto", // Center horizontally
-            marginRight: "auto", // Center horizontally
-          }}
-        >
-          Sign In
-        </Button>
-        <Grid container sx={{ mt: isMobile ? 2.5 : 0 }}>
-          <Grid item xs>
-            {/* <Link
-              href="#"
-              color="inherit"
-              sx={{
-                fontFamily: "nunito, sans-serif",
-                fontSize: "14px",
-                "&:hover": {
-                  color: "#388e3c", // Change the hover color here
-                  textDecorationColor: "#388e3c", // Change the underline color here
-                },
-              }}
-            >
-              Forgot password?
-            </Link> */}
-          </Grid>
+          text={"Sign In"}
+        />
+        <Grid container sx={{ mt: 1 }}>
+          <Grid item xs></Grid>
           <Grid item>
             <Link
               href="/register"
               color="primary"
               sx={{
-                fontFamily: "nunito, sans-serif",
-                fontSize: "14px",
+                fontFamily: theme.typography.fontFamily,
+                fontSize: "16px",
                 "&:hover": {
                   color: theme.palette.background.tertiary, // Change the hover color here
                   textDecorationColor: theme.palette.background.tertiary, // Change the underline color here
                 },
               }}
             >
-              Register
+              Not Signed Up with Us? Register Now
             </Link>
           </Grid>
         </Grid>

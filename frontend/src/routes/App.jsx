@@ -4,6 +4,7 @@ import theme from "../themes/theme";
 import logo from "../assets/logo.png";
 import ReactTypingEffect from "react-typing-effect";
 import { useNavigate } from "react-router-dom";
+import CustomButtonWhiteSquare from "../components/CustomButtonWhiteSquare";
 
 export default function App() {
   const navigate = useNavigate();
@@ -129,26 +130,16 @@ export default function App() {
             gap: "10px",
           }}
         >
-          <Button
-            variant="contained"
-            color="secondary"
+          <CustomButtonWhiteSquare
+            text="Log In"
             onClick={() => navigate("/login")}
-            sx={{
-              width: "150px",
-            }}
-          >
-            Log In
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
+            sx={{ width: "150px" }}
+          />
+          <CustomButtonWhiteSquare
+            text="Sign Up"
             onClick={() => navigate("/register")}
-            sx={{
-              width: "150px",
-            }}
-          >
-            Sign Up
-          </Button>
+            sx={{ width: "150px" }}
+          />
         </Box>
       </Grid>
     </Grid>

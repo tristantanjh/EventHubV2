@@ -1,12 +1,27 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import React, { Suspense } from "react";
 import theme from "../themes/theme";
 import logo from "../assets/logo.png";
-import { useNavigate } from "react-router-dom";
 import { LinearProgress, Box } from "@mui/material";
+
+const videoLinks = [
+  "https://media.istockphoto.com/id/1161129424/video/cheerful-entrepreneurs-shaking-hands-during-break.mp4?s=mp4-640x640-is&k=20&c=ile1nfUsvYed1FTSO5kDCRB2iMPg644XlM83JzcWK9A=",
+  "https://www.shutterstock.com/shutterstock/videos/1057995727/preview/stock-footage-viewer-crowded-audience-speak-with-speaker-in-microphone-participant-forum-speaking-educational.webm",
+];
 
 export default function LoginRegisterLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  let videoIndex;
+  if (currentPath === "/login") {
+    videoIndex = 0;
+  } else if (currentPath === "/register") {
+    videoIndex = 1; 
+  } else {
+    videoIndex = 0; 
+  }
 
   return (
     <Box
@@ -39,9 +54,7 @@ export default function LoginRegisterLayout() {
         loop
       >
         <source
-          src={
-            "https://media.istockphoto.com/id/1161129424/video/cheerful-entrepreneurs-shaking-hands-during-break.mp4?s=mp4-640x640-is&k=20&c=ile1nfUsvYed1FTSO5kDCRB2iMPg644XlM83JzcWK9A="
-          }
+          src={videoLinks[videoIndex]}
           type="video/mp4"
         />
         Your browser does not support the video tag.
