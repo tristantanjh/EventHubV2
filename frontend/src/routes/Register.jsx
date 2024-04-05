@@ -13,7 +13,6 @@ import {
   Input,
   InputAdornment,
   IconButton,
-  FormHelperText,
   Button,
   Grid,
   Link,
@@ -22,14 +21,16 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import CustomButton from "../components/CustomButton.jsx";
+import axios from "axios";
+import { validateForm } from "../utils/utils.js";
+import { toast } from "react-toastify";
+import bcrypt from 'bcryptjs';
 
 export default function Register() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const isMobile = useMediaQuery("(max-width:600px)");
   const [imageURL, setImageURL] = useState("empty");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,20 +40,12 @@ export default function Register() {
   const [errors, setErrors] = useState({
     email: "",
     password: "",
+    username: "",
   });
 
   useEffect(() => {
     console.log(imageURL); //shows true - updated state
   }, [imageURL]);
-
-  const handleOpenSnackbar = (message) => {
-    setSnackbarMessage(message);
-    setOpenSnackbar(true);
-  };
-
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
 
   const handleClickShowPassword = (event) => {
     event.preventDefault();
@@ -62,64 +55,69 @@ export default function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const hashedPassword = await bcrypt.hash(data.get('password'), 10);
 
-    // if (validateForm()) {
-    //   try {
-    //     const response = await axios.post("http://localhost:3000/createUser", {
-    //       username: data.get("username"),
-    //       email: data.get("email"),
-    //       password: data.get("password"),
-    //       profilePic: imageURL, // Assuming imageURL is the URL of the uploaded profile picture
-    //     });
+    const { valid, newErrors } = validateForm(formData);
 
-    //     login(response.data.user);
-    //     console.log(response.data);
-    //   } catch (error) {
-    //     console.error("Error creating user:", error.response.data.message);
-    //     handleOpenSnackbar(
-    //       "An error occurred while signing you up. Try again or contact our support team for assistance!"
-    //     );
-    //   }
-    // } else {
-    //   handleOpenSnackbar("Invalid details entered!");
-    //   console.log("Invalid form");
-    // }
+    if (valid) {
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/createUser",
+          {
+            username: data.get("username"),
+            email: data.get("email"),
+            phoneNumber: data.get("phoneNumber"),
+            password: hashedPassword,
+            profilePic: imageURL,
+          }
+        );
+
+        login(response.data.user);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error creating user:", error.response.data.error);
+        const tempErrors = { email: "", username: "" };
+        if (error.response.data.error === "Username is already taken.") {
+          tempErrors.username = error.response.data.error;
+        } else if (error.response.data.error === "Email is already taken.") {
+          tempErrors.email = error.response.data.error;
+        } else {
+          tempErrors.username = "Username is already taken.";
+          tempErrors.email = "Email is already taken.";
+        }
+        setErrors(tempErrors);
+      }
+    } else {
+      setErrors(newErrors);
+      console.log("Invalid form");
+    }
   };
+
+  useEffect(() => {
+    const notify = () => {
+      if (errors.username) {
+        toast(errors.username, { type: "error" });
+      }
+      if (errors.email) {
+        toast(errors.email, { type: "error" });
+      }
+      if (errors.password) {
+        toast(errors.password, { type: "error" });
+      }
+      if (errors) {
+        toast(errors, { type: "error" })
+      }
+    };
+
+    notify();
+  }, [errors]);
 
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
-    // console.log(formData);
     setFormData({
       ...formData,
       [name]: name === "rememberMe" ? checked : value,
     });
-  };
-
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = { email: "", password: "" };
-
-    // Email format regex pattern
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    // Check if email is empty or invalid format
-    if (!formData.email || !emailRegex.test(formData.email.trim())) {
-      newErrors.email = !formData.email
-        ? "Email is required"
-        : "Invalid email format";
-      valid = false;
-    }
-
-    // Password strength check
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-    if (!formData.password || !passwordRegex.test(formData.password)) {
-      newErrors.password =
-        "Password must be at least 6 characters with at least one uppercase and one lowercase letter";
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
   };
 
   function handleOnUpload(error, result, widget) {
@@ -166,6 +164,7 @@ export default function Register() {
             label="Username"
             name="username"
             autoFocus
+            error={Boolean(errors.username)}
             value={formData.username}
             onChange={handleChange}
             InputProps={{
@@ -202,7 +201,6 @@ export default function Register() {
             }}
           />
         </Box>
-
         <TextField
           color="warning"
           variant="standard"
@@ -213,7 +211,6 @@ export default function Register() {
           autoComplete="email"
           onChange={handleChange}
           error={Boolean(errors.email)}
-          helperText={errors.email}
           InputProps={{
             sx: {
               "& input:-webkit-autofill": {
@@ -249,16 +246,12 @@ export default function Register() {
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={handleClickShowPassword}
-                  // onMouseDown={handleMouseDownPassword}
                 >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
           />
-          {Boolean(errors.password) && (
-            <FormHelperText error>{errors.password}</FormHelperText>
-          )}
         </FormControl>
         <div
           style={{
@@ -304,7 +297,6 @@ export default function Register() {
             </CloudinaryUploadWidget>
           ) : (
             <Box
-              // display={{ xs: "flex", md: "none" }}
               id="image"
               component="img"
               fullWidth
@@ -329,6 +321,7 @@ export default function Register() {
             !formData.email ||
             !formData.password ||
             !formData.username ||
+            !formData.phoneNumber ||
             imageURL == "empty"
           }
           type="submit"

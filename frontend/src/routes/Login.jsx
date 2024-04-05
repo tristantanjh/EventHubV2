@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Box,
@@ -8,11 +8,8 @@ import {
   Input,
   InputAdornment,
   IconButton,
-  FormHelperText,
-  Button,
   Grid,
   Link,
-  useMediaQuery,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../hooks/AuthProvider";
@@ -20,14 +17,14 @@ import axios from "axios";
 import Copyright from "../components/Copyright.jsx";
 import CustomButton from "../components/CustomButton.jsx";
 import theme from "../themes/theme.js";
+import { toast } from "react-toastify";
+import { validateForm } from "../utils/utils.js";
+import bcrypt from "bcryptjs";
 
 export default function Login() {
   const { login } = useAuth();
-
+  const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const isMobile = useMediaQuery("(max-width:600px)");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -44,45 +41,50 @@ export default function Login() {
     setShowPassword((show) => !show);
   };
 
-  const handleOpenSnackbar = (message) => {
-    setSnackbarMessage(message);
-    setOpenSnackbar(true);
-  };
-
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    // if (validateForm()) {
-    //   try {
-    //     const response = await axios.post("http://localhost:3000/login", {
-    //       email: data.get("email"),
-    //       password: data.get("password"),
-    //     });
+    const plainTextPassword = data.get("password");
+    const { valid, newErrors } = validateForm(formData);
 
-    //     login(response.data.user);
+    if (valid) {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/getUserWithEmail",
+          {
+            params: {
+              email: data.get("email"),
+            },
+          }
+        );
 
-    //     console.log(response.data);
-    //   } catch (error) {
-    //     if (error.response.status === 401) {
-    //       console.error("Invalid username or password.");
-    //       handleOpenSnackbar("Invalid username or password.");
-    //     } else {
-    //       console.error("Error creating user:", error.response.data.message);
-    //       handleOpenSnackbar(
-    //         error.response.data.message ||
-    //           "An error occurred. Please try again."
-    //       );
-    //     }
-    //   }
-    // } else {
-    //   handleOpenSnackbar("Invalid details entered!");
-    //   console.log("Invalid form");
-    // }
+        console.log(response.data.user.password);
+        const passwordMatch = bcrypt.compareSync(
+          plainTextPassword,
+          response.data.user.password
+        );
+
+        if (passwordMatch === false) {
+          console.error("Invalid password.");
+          setErrors({ password: "Invalid password." });
+          return;
+        }
+
+        login(response.data.user);
+
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error logging in user:", error.response.data.error);
+        setErrors({
+          email: error.response.data.error,
+          password: error.response.data.error,
+        });
+      }
+    } else {
+      setErrors(newErrors);
+      console.log("Invalid form");
+    }
   };
 
   const handleChange = (e) => {
@@ -94,35 +96,18 @@ export default function Login() {
     });
   };
 
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = { email: "", password: "" };
+  useEffect(() => {
+    const notify = () => {
+      if (errors.password) {
+        toast(errors.password, { type: "error" });
+      }
+      if (errors) {
+        toast(errors, { type: "error" });
+      }
+    };
 
-    // Email format regex pattern
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    console.log(formData.email);
-    console.log(formData.password);
-
-    // Check if email is empty or invalid format
-    if (!formData.email || !emailRegex.test(formData.email.trim())) {
-      newErrors.email = !formData.email
-        ? "Email is required"
-        : "Invalid email format";
-      valid = false;
-    }
-
-    // Password strength check
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-    if (!formData.password || !passwordRegex.test(formData.password)) {
-      newErrors.password =
-        "Password must be at least 6 characters with at least one uppercase and one lowercase letter";
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
+    notify();
+  }, [errors]);
 
   return (
     <div
@@ -151,7 +136,6 @@ export default function Login() {
           autoFocus
           onChange={handleChange}
           error={Boolean(errors.email)}
-          helperText={errors.email}
           InputProps={{
             sx: {
               "& input:-webkit-autofill": {
@@ -202,14 +186,11 @@ export default function Login() {
               </InputAdornment>
             }
           />
-          {Boolean(errors.password) && (
-            <FormHelperText error>{errors.password}</FormHelperText>
-          )}
         </FormControl>
         <CustomButton
           type="submit"
-          disabled={!formData.email || !formData.password}
-          text={"Sign In"}
+          disabled={!formData.email || !formData.password || loading}
+          text={loading ? "loading" : "Sign In"}
         />
         <Grid container sx={{ mt: 1 }}>
           <Grid item xs></Grid>

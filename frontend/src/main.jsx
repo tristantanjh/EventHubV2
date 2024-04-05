@@ -13,6 +13,7 @@ import App from "./routes/App.jsx";
 import Home from "./routes/Home.jsx";
 import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
+import Profile from "./routes/Profile.jsx";
 import ErrorPage from "./routes/ErrorPage.jsx";
 
 import AuthLayout from "./layout/AuthLayout.jsx";
@@ -43,7 +44,7 @@ const router = createBrowserRouter([
         element: <ProtectedLayout />,
         children: [
           { path: "/home", element: <Home /> },
-          // { path: "/profile", element: <Profile /> },
+          { path: "/profile", element: <Profile /> },
         ],
       },
     ],

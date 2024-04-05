@@ -8,12 +8,15 @@ const createUser = async (req, res) => {
 
   try {
     const existingUser = await User.findOne({ username });
+    const existingEmail = await User.findOne({ email });
 
-    if (existingUser) {
-      return res.status(400).json({ error: "Username is already taken." });
+    if (existingUser && existingEmail) {
+      return res.status(400).json({ error: "Username and Email is already taken." });
     }
 
-    const existingEmail = await User.findOne({ email });
+    if (existingUser) {
+        return res.status(400).json({ error: "Username is already taken." });
+    }
 
     if (existingEmail) {
       return res.status(400).json({ error: "Email is already taken." });
@@ -70,10 +73,10 @@ const getUserWithEmail = async (req, res) => {
     if (user) {
       res.status(200).json({ user });
     } else {
-      res.status(404).json({ message: "User not found." });
+      res.status(404).json({ error: "User not found." });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
