@@ -11,11 +11,13 @@ const createUser = async (req, res) => {
     const existingEmail = await User.findOne({ email });
 
     if (existingUser && existingEmail) {
-      return res.status(400).json({ error: "Username and Email is already taken." });
+      return res
+        .status(400)
+        .json({ error: "Username and Email is already taken." });
     }
 
     if (existingUser) {
-        return res.status(400).json({ error: "Username is already taken." });
+      return res.status(400).json({ error: "Username is already taken." });
     }
 
     if (existingEmail) {
@@ -83,7 +85,7 @@ const getUserWithEmail = async (req, res) => {
 const editProfile = async (req, res) => {
   try {
     const userId = req.query.userId; // Assuming the user ID is passed in the URL parameter
-    const { username, email, phoneNumber, profilePic, password } = req.body;
+    const { username, email, phoneNumber, bio } = req.body;
 
     // Find the user by ID
     const user = await User.findById(userId);
@@ -102,11 +104,8 @@ const editProfile = async (req, res) => {
     if (phoneNumber) {
       user.phoneNumber = phoneNumber;
     }
-    if (profilePic) {
-      user.profilePic = profilePic;
-    }
-    if (password) {
-      user.password = password;
+    if (bio) {
+      user.bio = bio;
     }
 
     // Save the updated user
@@ -120,6 +119,52 @@ const editProfile = async (req, res) => {
     res
       .status(500)
       .json({ message: "An error occurred while updating the profile." });
+  }
+};
+
+const editProfilePic = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    const { profilePic } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (profilePic) {
+      user.profilePic = profilePic;
+    }
+
+    const updatedUser = await user.save();
+    res
+      .status(200)
+      .json({ message: "Profile Picture updated successfully.", updatedUser });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the profile picture." });
+  }
+};
+
+const editPassword = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    const { password } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (password) {
+      user.password = password;
+    }
+
+    const updatedUser = await user.save();
+    res
+      .status(200)
+      .json({ message: "Password updated successfully.", updatedUser });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the password." });
   }
 };
 
@@ -161,5 +206,7 @@ export {
   getUserWithId,
   getProfilePic,
   editProfile,
+  editProfilePic,
+  editPassword,
   getUserWithEmail,
 };

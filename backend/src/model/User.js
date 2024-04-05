@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
+  bio: {
+    type: String,
+  },
   hostedEvents: [
     {
       type: mongoose.Schema.Types.ObjectId,

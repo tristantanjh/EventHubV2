@@ -1,7 +1,6 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import theme from "../themes/theme";
-import CircularProgress from "@mui/material/CircularProgress";
 
 export default function CustomButton(props) {
   return (

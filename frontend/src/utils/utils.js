@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 export const validateForm = (formData) => {
   let valid = true;
   const newErrors = { email: "", password: "" };
@@ -22,5 +24,9 @@ export const validateForm = (formData) => {
   }
 
   return { valid, newErrors };
+};
+
+export const notify = (message, toastType) => {
+  toast(message, { type: toastType });
 };
 

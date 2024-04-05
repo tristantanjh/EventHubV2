@@ -1,32 +1,29 @@
 import * as React from "react";
-import PropTypes from "prop-types";
-import "../index.css";
 import logo from "../assets/logo.png";
 
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import SettingsIcon from "@mui/icons-material/Settings";
-import PermIdentityIcon from "@mui/icons-material/PermIdentity";
-import HistoryIcon from "@mui/icons-material/History";
-import MenuItem from "@mui/material/MenuItem";
-import Drawer from "@mui/material/Drawer";
-import MenuIcon from "@mui/icons-material/Menu";
-import { alpha } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import {
+  Box,
+  AppBar,
+  Toolbar,
+  Container,
+  Divider,
+  ListItemIcon,
+  MenuItem,
+  Drawer,
+  alpha,
+  Avatar,
+  Paper,
+} from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import HistoryIcon from '@mui/icons-material/History';
+import MenuIcon from '@mui/icons-material/Menu';
+import PermIdentityIcon from '@mui/icons-material/PermIdentity';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useAuth } from "../hooks/AuthProvider";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import Avatar from "@mui/material/Avatar";
-import Paper from "@mui/material/Paper";
 import theme from "../themes/theme";
 import CustomButtonWhiteSquare from "./CustomButtonWhiteSquare";
 
-function AppBarSecondary() {
+function NavBar() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const { logout } = useAuth();
   const { user } = useAuth();
@@ -34,13 +31,8 @@ function AppBarSecondary() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const toggleDrawer = (newOpen) => () => {
-    setDrawerOpen(newOpen);
-  };
-
   const handleLogout = async () => {
     try {
-      //   await axios.get("http://localhost:3000/logout");
       logout();
     } catch (error) {
       console.error("Error logging out:", error);
@@ -106,7 +98,7 @@ function AppBarSecondary() {
                 mt: 4,
               }}
             >
-              <Box sx={{ flexGrow: 1 }} onClick={toggleDrawer(true)}>
+              <Box sx={{ flexGrow: 1 }} onClick={() => setDrawerOpen(true)}>
                 <Paper
                   variant="outlined"
                   sx={{
@@ -144,11 +136,12 @@ function AppBarSecondary() {
                   />
                 </Paper>
               </Box>
+              
 
               <Drawer
                 anchor="right"
                 open={drawerOpen}
-                onClose={toggleDrawer(false)}
+                onClose={() => setDrawerOpen(false)}
               >
                 <Box
                   id="drawerContent"
@@ -168,7 +161,10 @@ function AppBarSecondary() {
                     }}
                   ></Box>
                   <MenuItem
-                    onClick={() => navigate("/profile")}
+                    onClick={() => {
+                      navigate("/profile");
+                      setDrawerOpen(false);
+                    }}
                     sx={{
                       fontWeight: "750",
                       fontSize: { xs: "0.9rem", md: "0.9rem" },
@@ -198,7 +194,10 @@ function AppBarSecondary() {
                     PROFILE SETTINGS
                   </MenuItem>
                   <MenuItem
-                    onClick={() => navigate("/manageevents")}
+                    onClick={() => {
+                      navigate("/manage-events");
+                      setDrawerOpen(false);
+                    }}
                     sx={{
                       fontWeight: "750",
                       fontSize: { xs: "0.9rem", md: "0.9rem" },
@@ -226,7 +225,10 @@ function AppBarSecondary() {
                     MANAGE EVENTS
                   </MenuItem>
                   <MenuItem
-                    onClick={() => navigate("/eventhistory")}
+                    onClick={() => {
+                      navigate("/event-history");
+                      setDrawerOpen(false);
+                    }}
                     sx={{
                       fontWeight: "750",
                       fontSize: { xs: "0.9rem", md: "0.9rem" },
@@ -279,8 +281,4 @@ function AppBarSecondary() {
   );
 }
 
-AppBarSecondary.propTypes = {
-  mode: PropTypes.oneOf(["dark", "light"]).isRequired,
-};
-
-export default AppBarSecondary;
+export default NavBar;

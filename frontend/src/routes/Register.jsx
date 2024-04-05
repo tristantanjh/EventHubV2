@@ -17,6 +17,7 @@ import {
   Grid,
   Link,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState, useEffect } from "react";
@@ -29,6 +30,7 @@ import bcrypt from 'bcryptjs';
 export default function Register() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery("(max-width:600px)");
   const [imageURL, setImageURL] = useState("empty");
   const [formData, setFormData] = useState({
@@ -53,6 +55,7 @@ export default function Register() {
   };
 
   const handleSubmit = async (event) => {
+    setLoading(true);
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const hashedPassword = await bcrypt.hash(data.get('password'), 10);
@@ -72,6 +75,7 @@ export default function Register() {
           }
         );
 
+        setLoading(false);
         login(response.data.user);
         console.log(response.data);
       } catch (error) {
@@ -86,10 +90,12 @@ export default function Register() {
           tempErrors.email = "Email is already taken.";
         }
         setErrors(tempErrors);
+        setLoading(false);
       }
     } else {
       setErrors(newErrors);
       console.log("Invalid form");
+      setLoading(false);
     }
   };
 
@@ -322,10 +328,11 @@ export default function Register() {
             !formData.password ||
             !formData.username ||
             !formData.phoneNumber ||
-            imageURL == "empty"
+            imageURL == "empty" ||
+            loading
           }
           type="submit"
-          text={"Sign Up"}
+          text={loading ? <CircularProgress size={24} color="inherit" /> : "Sign Up"}
         />
         <Grid container sx={{ mt: isMobile ? 2.5 : 0 }}>
           <Grid item xs></Grid>

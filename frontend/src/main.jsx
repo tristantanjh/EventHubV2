@@ -15,6 +15,8 @@ import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
 import Profile from "./routes/Profile.jsx";
 import ErrorPage from "./routes/ErrorPage.jsx";
+import ManageEvents from "./routes/ManageEvents.jsx";
+import EventHistory from "./routes/EventHistory.jsx";
 
 import AuthLayout from "./layout/AuthLayout.jsx";
 import PublicLayout from "./layout/PublicLayout.jsx";
@@ -45,6 +47,8 @@ const router = createBrowserRouter([
         children: [
           { path: "/home", element: <Home /> },
           { path: "/profile", element: <Profile /> },
+          { path: "/manage-events", element: <ManageEvents />},
+          { path: "/event-history", element: <EventHistory />},
         ],
       },
     ],

@@ -5,6 +5,8 @@ import {
   getUserWithId,
   getProfilePic,
   editProfile,
+  editProfilePic,
+  editPassword,
   getUserWithEmail,
 } from "../controllers/userController.js";
 import {
@@ -30,6 +32,10 @@ APIrouter.get("/getUserWithId", getUserWithId);
 APIrouter.get("/getProfilePic", getProfilePic);
 
 APIrouter.put("/editProfile", editProfile);
+
+APIrouter.put("/editProfilePic", editProfilePic);
+
+APIrouter.put("/editPassword", editPassword);
 
 APIrouter.get("/getUserWithEmail", getUserWithEmail);
 

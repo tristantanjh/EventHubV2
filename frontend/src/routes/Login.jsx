@@ -10,6 +10,7 @@ import {
   IconButton,
   Grid,
   Link,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../hooks/AuthProvider";
@@ -23,7 +24,7 @@ import bcrypt from "bcryptjs";
 
 export default function Login() {
   const { login } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -43,6 +44,7 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     const data = new FormData(event.currentTarget);
 
     const plainTextPassword = data.get("password");
@@ -68,11 +70,12 @@ export default function Login() {
         if (passwordMatch === false) {
           console.error("Invalid password.");
           setErrors({ password: "Invalid password." });
+          setLoading(false);
           return;
         }
+        setLoading(false);
 
         login(response.data.user);
-
         console.log(response.data);
       } catch (error) {
         console.error("Error logging in user:", error.response.data.error);
@@ -80,10 +83,12 @@ export default function Login() {
           email: error.response.data.error,
           password: error.response.data.error,
         });
+        setLoading(false);
       }
     } else {
       setErrors(newErrors);
       console.log("Invalid form");
+      setLoading(false);
     }
   };
 
@@ -190,7 +195,7 @@ export default function Login() {
         <CustomButton
           type="submit"
           disabled={!formData.email || !formData.password || loading}
-          text={loading ? "loading" : "Sign In"}
+          text={loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
         />
         <Grid container sx={{ mt: 1 }}>
           <Grid item xs></Grid>
