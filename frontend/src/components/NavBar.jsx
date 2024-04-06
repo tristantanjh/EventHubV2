@@ -115,11 +115,9 @@ function NavBar() {
                     padding: "8px 24px 8px 24px",
                     height: "30px",
                     cursor: "pointer",
-                    borderRadius: "16px",
+                    borderRadius: "8px",
                     backgroundColor: theme.palette.background.secondary,
-                    borderColor: "secondary.main",
                     boxShadow: 1,
-                    border: 1,
                     color: theme.palette.secondary.main,
                     transition: "background-color 0.3s ease",
                     "&:hover": {

@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function CreateEvent() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [imageURL, setImageURL] = useState("empty");
   const [eventDate, setEventDate] = useState(null);
   const [deadlineDate, setDeadlineDate] = useState(null);
@@ -105,29 +105,27 @@ export default function CreateEvent() {
       return;
     }
     if (imageURL === "empty") {
-        notify("Please upload an event photo", "error");
-        return;
+      notify("Please upload an event photo", "error");
+      return;
     }
     setOpenModal(true);
   };
 
   const handleCreateEvent = async () => {
     axios
-      .post(
-        "http://localhost:3000/api/createEvent",
-        {
-            title: title,
-            location: location,
-            description: description,
-            date: eventDate,
-            deadline: deadlineDate,
-            eventPic: imageURL,
-            host: user._id,
-        },
-      )
+      .post("http://localhost:3000/api/createEvent", {
+        title: title,
+        location: location,
+        description: description,
+        date: eventDate,
+        deadline: deadlineDate,
+        eventPic: imageURL,
+        host: user._id,
+      })
       .then((response) => {
         toast("Event created successfully!", { type: "success" });
         console.log(response.data);
+        updateUser(response.data.user);
         navigate("/manage-events");
       })
       .catch((error) => {
@@ -137,252 +135,238 @@ export default function CreateEvent() {
   };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100vw",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: theme.palette.background.default,
-      }}
-    >
-      <Grid container spacing={4}>
-        {/* Left side: Picture */}
-        <Grid item xs={3}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-              width: "100%",
-              borderRadius: "30px",
-              padding: "20px",
-              marginLeft: "50px",
-            }}
-          >
-            <Typography
-              sx={{
-                position: "absolute",
-                top: "15%",
-                left: "10%",
-                transform: "translate(-50%, -50%)",
-                textAlign: "center",
-                fontSize: "2rem",
-                letterSpacing: "2px",
-                fontWeight: "bold",
-                color: theme.palette.text.primary,
-              }}
-            >
-              Create Event
-            </Typography>
-            {imageURL == "empty" ? (
-              <CloudinaryUploadWidget onUpload={handleOnUpload}>
-                {({ open }) => {
-                  function handleOnClick(e) {
-                    e.preventDefault();
-                    open();
-                  }
-                  return (
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      onClick={handleOnClick}
-                      sx={{
-                        height: "600px",
-                        backgroundColor: "#FFFFFF",
-                        color: theme.palette.text.secondary,
-                        border: "1px dashed #181B13",
-                        borderRadius: "10px",
-                        "&:hover": {
-                          backgroundColor: "#DFDFDF",
-                          borderColor: theme.palette.background.tertiary,
-                        },
-                        px: "16px",
-                        py: "16px",
-                        fontSize: "24px",
-                        cursor: "pointer",
-                        textTransform: "initial",
-                      }}
-                    >
-                      Upload Event Photo
-                    </Button>
-                  );
-                }}
-              </CloudinaryUploadWidget>
-            ) : (
-              <Box
-                id="image"
-                component="img"
-                fullWidth
-                sx={{
-                  height: "600px",
-                  width: "100%",
-                  border: "1px dashed #181B13",
-                  borderRadius: "10px",
-                  alignSelf: "flex-start",
-                  "&:hover": { backgroundColor: "#FFFFFF" },
-                  justifyContent: "flex-start",
-                  alignItems: "flex-start",
-                  objectFit: "contain",
-                }}
-                src={imageURL}
-                alt="Uploaded Profile Picture"
-              />
-            )}
-          </Box>
-        </Grid>
-        <Grid
-          item
-          md={1}
-          sx={{ display: "flex", justifyContent: "center" }}
-        ></Grid>
-        <Divider
-          flexItem
-          variant="middle"
-          orientation="vertical"
-          sx={{ height: "100%" }}
-        />
-        {/* Right side: Input fields */}
-        <Grid
-          item
-          md={7}
-          container
-          direction="column"
-          alignItems="center"
-          justifyContent="center"
-          margin={8}
+    <Grid container spacing={4}>
+      {/* Left side: Picture */}
+      <Grid item xs={3}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+            borderRadius: "30px",
+            padding: "20px",
+            marginLeft: "50px",
+          }}
         >
           <Typography
-            variant="body2"
-            align="left"
-            color="primary"
-            sx={{ mb: 1, fontWeight: 600 }}
-          >
-            Title:
-          </Typography>
-          <TextField
-            fullWidth
-            value={title}
-            onChange={handleTitleChange}
-            color="warning"
-            variant="outlined"
-            margin="dense"
-            sx={{ mb: 2 }}
-          />
-          <Typography
-            variant="body2"
-            align="left"
-            color="primary"
-            sx={{ mb: 1, fontWeight: 600 }}
-          >
-            Location:
-          </Typography>
-          <TextField
-            fullWidth
-            value={location}
-            onChange={handleLocationChange}
-            color="warning"
-            variant="outlined"
-            margin="dense"
-            sx={{ mb: 2 }}
-          />
-          <Typography
-            variant="body2"
-            align="left"
-            color="primary"
-            sx={{ mb: 1, fontWeight: 600 }}
-          >
-            Description:
-          </Typography>
-          <TextField
-            fullWidth
-            value={description}
-            onChange={handleDescriptionChange}
-            variant="outlined"
-            color="warning"
-            multiline
-            rows={4}
-            margin="dense"
-            sx={{ mb: 2 }}
-          />
-          <Typography
-            variant="body2"
-            align="left"
-            color="primary"
-            sx={{ mb: 1, fontWeight: 600 }}
-          >
-            Event Date:
-          </Typography>
-          <DatePicker
-            value={eventDate}
-            onChange={(newValue) => setEventDate(newValue)}
-            sx={{ mb: 2, width: "100%", ...datePickerStyles }}
-          />
-          <Typography
-            variant="body2"
-            align="left"
-            color="primary"
-            sx={{ mb: 1, fontWeight: 600 }}
-          >
-            Registration Deadline:
-          </Typography>
-          <DatePicker
-            value={deadlineDate}
-            onChange={(newValue) => setDeadlineDate(newValue)}
             sx={{
-              mb: 2,
-              width: "100%",
-              ...datePickerStyles,
+              position: "absolute",
+              top: "15%",
+              left: "10%",
+              transform: "translate(-50%, -50%)",
+              textAlign: "center",
+              fontSize: "2rem",
+              letterSpacing: "2px",
+              fontWeight: "bold",
+              color: theme.palette.text.primary,
             }}
-          />
-          <CustomButtonWhiteSquare
-            onClick={validateCreateEvent}
-            variant="contained"
-            color="primary"
-            text="Confirm Event"
-            sx={{ marginTop: 4, width: 200 }}
-          />
-
-          <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-            <DialogTitle
+          >
+            Create Event
+          </Typography>
+          {imageURL == "empty" ? (
+            <CloudinaryUploadWidget onUpload={handleOnUpload}>
+              {({ open }) => {
+                function handleOnClick(e) {
+                  e.preventDefault();
+                  open();
+                }
+                return (
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleOnClick}
+                    sx={{
+                      height: "600px",
+                      backgroundColor: "#FFFFFF",
+                      color: theme.palette.text.secondary,
+                      border: "1px dashed #181B13",
+                      borderRadius: "10px",
+                      "&:hover": {
+                        backgroundColor: "#DFDFDF",
+                        borderColor: theme.palette.background.tertiary,
+                      },
+                      px: "16px",
+                      py: "16px",
+                      fontSize: "24px",
+                      cursor: "pointer",
+                      textTransform: "initial",
+                    }}
+                  >
+                    Upload Event Photo
+                  </Button>
+                );
+              }}
+            </CloudinaryUploadWidget>
+          ) : (
+            <Box
+              id="image"
+              component="img"
+              fullWidth
               sx={{
-                fontWeight: "bold",
+                height: "600px",
+                width: "100%",
+                border: "1px dashed #181B13",
+                borderRadius: "10px",
+                alignSelf: "flex-start",
+                "&:hover": { backgroundColor: "#FFFFFF" },
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                objectFit: "contain",
+              }}
+              src={imageURL}
+              alt="Uploaded Profile Picture"
+            />
+          )}
+        </Box>
+      </Grid>
+      <Grid
+        item
+        md={1}
+        sx={{ display: "flex", justifyContent: "center" }}
+      ></Grid>
+      <Divider
+        flexItem
+        variant="middle"
+        orientation="vertical"
+        sx={{ height: "100%" }}
+      />
+      {/* Right side: Input fields */}
+      <Grid
+        item
+        md={7}
+        container
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        margin={8}
+      >
+        <Typography
+          variant="body2"
+          align="left"
+          color="primary"
+          sx={{ mb: 1, fontWeight: 600 }}
+        >
+          Title:
+        </Typography>
+        <TextField
+          fullWidth
+          value={title}
+          onChange={handleTitleChange}
+          color="warning"
+          variant="outlined"
+          margin="dense"
+          sx={{ mb: 2 }}
+        />
+        <Typography
+          variant="body2"
+          align="left"
+          color="primary"
+          sx={{ mb: 1, fontWeight: 600 }}
+        >
+          Location:
+        </Typography>
+        <TextField
+          fullWidth
+          value={location}
+          onChange={handleLocationChange}
+          color="warning"
+          variant="outlined"
+          margin="dense"
+          sx={{ mb: 2 }}
+        />
+        <Typography
+          variant="body2"
+          align="left"
+          color="primary"
+          sx={{ mb: 1, fontWeight: 600 }}
+        >
+          Description:
+        </Typography>
+        <TextField
+          fullWidth
+          value={description}
+          onChange={handleDescriptionChange}
+          variant="outlined"
+          color="warning"
+          multiline
+          rows={4}
+          margin="dense"
+          sx={{ mb: 2 }}
+        />
+        <Typography
+          variant="body2"
+          align="left"
+          color="primary"
+          sx={{ mb: 1, fontWeight: 600 }}
+        >
+          Event Date:
+        </Typography>
+        <DatePicker
+          value={eventDate}
+          onChange={(newValue) => setEventDate(newValue)}
+          sx={{ mb: 2, width: "100%", ...datePickerStyles }}
+        />
+        <Typography
+          variant="body2"
+          align="left"
+          color="primary"
+          sx={{ mb: 1, fontWeight: 600 }}
+        >
+          Registration Deadline:
+        </Typography>
+        <DatePicker
+          value={deadlineDate}
+          onChange={(newValue) => setDeadlineDate(newValue)}
+          sx={{
+            mb: 2,
+            width: "100%",
+            ...datePickerStyles,
+          }}
+        />
+        <CustomButtonWhiteSquare
+          onClick={validateCreateEvent}
+          variant="contained"
+          color="primary"
+          text="Confirm Event"
+          sx={{ marginTop: 4, width: 200 }}
+        />
+
+        <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+          <DialogTitle
+            sx={{
+              fontWeight: "bold",
+            }}
+          >
+            Confirm Event Creation
+          </DialogTitle>
+          <DialogContent>
+            <Typography>Are you sure you want to create this event?</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenModal(false)}
+              color="primary"
+              sx={{
+                fontWeight: "normal",
               }}
             >
-              Confirm Event Creation
-            </DialogTitle>
-            <DialogContent>
-              <Typography>
-                Are you sure you want to create this event?
-              </Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={() => setOpenModal(false)}
-                color="primary"
-                sx={{
-                  fontWeight: "normal",
-                }}
-              >
-                Not yet
-              </Button>
-              <Button
-                onClick={handleCreateEvent}
-                sx={{
-                  fontWeight: "bold",
-                  color: theme.palette.background.tertiary,
-                }}
-              >
-                Do It!
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Grid>
+              Not yet
+            </Button>
+            <Button
+              onClick={handleCreateEvent}
+              sx={{
+                fontWeight: "bold",
+                color: theme.palette.background.tertiary,
+              }}
+            >
+              Do It!
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
-    </div>
+    </Grid>
   );
 }

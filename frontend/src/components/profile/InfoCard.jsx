@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogTitle,
   Paper,
+  alpha,
 } from "@mui/material";
 import theme from "../../themes/theme";
 import CreateIcon from "@mui/icons-material/Create";
@@ -21,6 +22,7 @@ import CloudinaryUploadWidget from "../CloudinaryUploadWidget";
 import swal from "sweetalert";
 import axios from "axios";
 import { toast } from "react-toastify";
+import bcrypt from "bcryptjs";
 
 export default function InfoCard() {
   const { user, updateUser } = useAuth();
@@ -99,15 +101,6 @@ export default function InfoCard() {
     setNewPhoneNumber(e.target.value);
   };
 
-  const handleChangePassword = () => {
-    // Implement logic to change password
-    console.log("New password:", newPassword);
-    console.log("Verify password:", verifyPassword);
-    setNewPassword(""); // Clear the input fields
-    setVerifyPassword("");
-    setOpenModal(false); // Close the dialog
-  };
-
   const handlePasswordChange = (e) => {
     setNewPassword(e.target.value);
   };
@@ -172,6 +165,7 @@ export default function InfoCard() {
         console.log("Profile updated successfully:", response.data);
         updateUser(response.data.updatedUser);
         toast("Profile updated successfully!", { type: "success" });
+        setEditMode(false);
       })
       .catch((error) => {
         console.error("Error updating profile picture:", error);
@@ -183,8 +177,6 @@ export default function InfoCard() {
         }
         setErrors(tempErrors);
       });
-
-    setEditMode(false);
   };
 
   const validatePassword = (data) => {
@@ -227,11 +219,13 @@ export default function InfoCard() {
       return;
     }
 
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
     axios
       .put(
         "http://localhost:3000/api/editPassword",
         {
-          password: newPassword,
+          password: hashedPassword,
         },
         {
           params: {
@@ -538,6 +532,21 @@ export default function InfoCard() {
                     onClick={handleSaveProfile}
                     text="Save"
                     sx={{ width: 200 }}
+                  />
+                  <CustomButtonWhiteSquare
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {
+                      setEditMode(false);
+                      setNewUsername(username);
+                      setNewEmail(email);
+                      setNewPhoneNumber(phoneNumber);
+                      setUserBio(bio);
+                    }}
+                    text="Cancel"
+                    sx={{
+                      width: 200,
+                    }}
                   />
                   <CustomButtonWhiteSquare
                     variant="outlined"

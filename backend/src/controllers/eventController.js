@@ -20,7 +20,7 @@ const createEvent = async (req, res) => {
 
     const savedEvent = await newEvent.save();
 
-    await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { _id: host },
       { $push: { hostedEvents: savedEvent._id } },
       { new: true }
@@ -28,7 +28,7 @@ const createEvent = async (req, res) => {
 
     res
       .status(201)
-      .json({ message: "Event created successfully", event: savedEvent });
+      .json({ message: "Event created successfully", event: savedEvent, user: updatedUser });
   } catch (error) {
     console.error(error);
     res
@@ -219,7 +219,7 @@ const deleteEvent = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Event deleted successfully.", deletedEvent });
+      .json({ message: "Event deleted successfully.", deletedEvent, user });
   } catch (error) {
     console.error(error);
     res
