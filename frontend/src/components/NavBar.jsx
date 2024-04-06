@@ -18,7 +18,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import HistoryIcon from '@mui/icons-material/History';
 import MenuIcon from '@mui/icons-material/Menu';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
-import SettingsIcon from '@mui/icons-material/Settings';
+import EventIcon from '@mui/icons-material/Event';
 import { useAuth } from "../hooks/AuthProvider";
 import theme from "../themes/theme";
 import CustomButtonWhiteSquare from "./CustomButtonWhiteSquare";
@@ -211,7 +211,7 @@ function NavBar() {
                         filter: "grayscale(100%)",
                       }}
                     >
-                      <SettingsIcon style={{ width: "30px", height: "30px" }} />
+                      <EventIcon style={{ width: "30px", height: "30px" }} />
                     </ListItemIcon>
                     <Divider
                       orientation="vertical"

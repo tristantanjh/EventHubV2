@@ -94,6 +94,17 @@ const editProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
+    const existingUser = await User.findOne({ username });
+    const existingEmail = await User.findOne({ email });
+
+    if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+      return res.status(400).json({ error: "Username is already taken." });
+    }
+    
+    if (existingEmail && existingEmail._id.toString() !== user._id.toString()) {
+      return res.status(400).json({ error: "Email is already taken." });
+    }
+
     // Update user's profile fields
     if (username) {
       user.username = username;
@@ -141,7 +152,9 @@ const editProfilePic = async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({ message: "An error occurred while updating the profile picture." });
+      .json({
+        message: "An error occurred while updating the profile picture.",
+      });
   }
 };
 

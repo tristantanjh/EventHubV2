@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo } from "react";
+import React, { createContext, useContext, useState, useMemo, useEffect } from "react";
 import useLocalStorage from "./useLocalStorage.js";
 import { useNavigate } from "react-router-dom";
 
@@ -28,6 +28,11 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = () => !!user;
 
+  const updateUser = (userData) => {
+    console.log(userData)
+    setUser(userData);
+  };
+
   //useMemo to improve performance
   const value = useMemo(
     () => ({
@@ -37,6 +42,7 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       isAuthenticated,
+      updateUser,
     }),
     [user]
   );

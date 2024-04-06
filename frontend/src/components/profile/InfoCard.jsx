@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -19,17 +19,28 @@ import { useAuth } from "../../hooks/AuthProvider";
 import CustomButtonWhiteSquare from "../CustomButtonWhiteSquare";
 import CloudinaryUploadWidget from "../CloudinaryUploadWidget";
 import swal from "sweetalert";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function InfoCard() {
-  const { user } = useAuth();
-  const { username, profilePic, email, password, phoneNumber, bio } = user;
-  const [userBio, setUserBio] = useState(bio || "");
+  const { user, updateUser } = useAuth();
+  const { _id, username, profilePic, email, password, phoneNumber, bio } = user;
+  const [userBio, setUserBio] = useState(bio);
   const [newUsername, setNewUsername] = useState(username);
+  const [newEmail, setNewEmail] = useState(email);
+  const [newPhoneNumber, setNewPhoneNumber] = useState(phoneNumber);
   const [openModal, setOpenModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [verifyPassword, setVerifyPassword] = useState("");
-  const [imageURL, setImageURL] = useState("");
+  const [imageURL, setImageURL] = useState(profilePic);
+  const [errors, setErrors] = useState({
+    email: "",
+    username: "",
+    phoneNumber: "",
+  });
+
+  const [passwordError, setPasswordError] = useState({});
 
   function handleOnUpload(error, result, widget) {
     if (error) {
@@ -44,17 +55,31 @@ export default function InfoCard() {
     const secureUrl = result?.info?.secure_url;
 
     if (secureUrl) {
-      console.log("setURL");
+      axios
+        .put(
+          "http://localhost:3000/api/editProfilePic",
+          { profilePic: secureUrl },
+          {
+            params: {
+              userId: _id,
+            },
+          }
+        )
+        .then((response) => {
+          console.log("Profile picture updated successfully:", response.data);
+          updateUser(response.data.updatedUser);
+        })
+        .catch((error) => {
+          console.error("Error updating profile picture:", error);
+        });
       setImageURL(secureUrl);
       console.log(imageURL);
     }
   }
 
-  const handleOpen = () => {
-    setOpenModal(true);
-  };
-
   const handleClose = () => {
+    setNewPassword(""); // Clear the input fields
+    setVerifyPassword("");
     setOpenModal(false);
   };
 
@@ -64,6 +89,14 @@ export default function InfoCard() {
 
   const handleUsernameChange = (e) => {
     setNewUsername(e.target.value);
+  };
+
+  const handleEmailChange = (e) => {
+    setNewEmail(e.target.value);
+  };
+
+  const handlePhoneNumChange = (e) => {
+    setNewPhoneNumber(e.target.value);
   };
 
   const handleChangePassword = () => {
@@ -83,18 +116,180 @@ export default function InfoCard() {
     setVerifyPassword(e.target.value);
   };
 
-  const handleSaveBio = () => {
-    // Implement your logic to save the bio data
-    console.log("Bio saved:", bio);
-    setEditMode(false); // Exit edit mode after saving
+  const validateRegular = (data) => {
+    const newErrors = { email: "", username: "", phoneNumber: "" };
+    let valid = true;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!data.email || !emailRegex.test(data.email.trim())) {
+      newErrors.email = !data.email
+        ? "Email is required"
+        : "Invalid email format";
+      valid = false;
+    }
+
+    if (data.username === "") {
+      newErrors.username = "Username is required.";
+      valid = false;
+    }
+
+    if (data.phoneNumber === "") {
+      newErrors.phoneNumber = "Phone number is required.";
+      valid = false;
+    }
+
+    return { valid, newErrors };
   };
+
+  const handleSaveProfile = async () => {
+    const { valid, newErrors } = validateRegular({
+      email: newEmail,
+      username: newUsername,
+      phoneNumber: newPhoneNumber,
+    });
+
+    if (!valid) {
+      setErrors(newErrors);
+      return;
+    }
+    axios
+      .put(
+        "http://localhost:3000/api/editProfile",
+        {
+          username: newUsername,
+          email: newEmail,
+          phoneNumber: newPhoneNumber,
+          bio: userBio,
+        },
+        {
+          params: {
+            userId: _id,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Profile updated successfully:", response.data);
+        updateUser(response.data.updatedUser);
+        toast("Profile updated successfully!", { type: "success" });
+      })
+      .catch((error) => {
+        console.error("Error updating profile picture:", error);
+        const tempErrors = { email: "", username: "" };
+        if (error.response.data.error === "Username is already taken.") {
+          tempErrors.username = error.response.data.error;
+        } else if (error.response.data.error === "Email is already taken.") {
+          tempErrors.email = error.response.data.error;
+        }
+        setErrors(tempErrors);
+      });
+
+    setEditMode(false);
+  };
+
+  const validatePassword = (data) => {
+    const newErrors = { password: "" };
+    let valid = true;
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    if (!data.newPassword || !passwordRegex.test(data.newPassword)) {
+      newErrors.password =
+        "Password must be at least 6 characters with at least one uppercase and one lowercase letter";
+      valid = false;
+    }
+
+    if (data.newPassword === "") {
+      newErrors.password = "Password is required.";
+      valid = false;
+    }
+
+    if (data.verifyPassword === "") {
+      newErrors.password = "Password is required.";
+      valid = false;
+    }
+
+    if (data.newPassword !== data.verifyPassword) {
+      newErrors.password = "Passwords do not match.";
+      valid = false;
+    }
+
+    return { valid, newErrors };
+  };
+
+  const handleSavePassword = async () => {
+    const { valid, newErrors } = validatePassword({
+      newPassword: newPassword,
+      verifyPassword: verifyPassword,
+    });
+
+    if (!valid) {
+      setPasswordError(newErrors.password);
+      return;
+    }
+
+    axios
+      .put(
+        "http://localhost:3000/api/editPassword",
+        {
+          password: newPassword,
+        },
+        {
+          params: {
+            userId: _id,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Password updated successfully:", response.data);
+        toast("Password updated successfully!", { type: "success" });
+        updateUser(response.data.updatedUser);
+        setNewPassword(""); // Clear the input fields
+        setVerifyPassword("");
+        setOpenModal(false);
+      })
+      .catch((error) => {
+        console.error("Error updating password:", error);
+        setPasswordError("Error updating password.");
+      });
+
+    setOpenModal(false);
+  };
+
+  useEffect(() => {
+    const notify = () => {
+      if (errors.username) {
+        toast(errors.username, { type: "error" });
+      }
+      if (errors.email) {
+        toast(errors.email, { type: "error" });
+      }
+      if (errors.phoneNumber) {
+        toast(errors.phoneNumber, { type: "error" });
+      }
+      if (errors) {
+        toast(errors, { type: "error" });
+      }
+    };
+
+    notify();
+  }, [errors]);
+
+  useEffect(() => {
+    const notify = () => {
+      if (passwordError) {
+        toast(passwordError, { type: "error" });
+      }
+    };
+
+    notify();
+  }, [passwordError]);
 
   return (
     <Box
       position="absolute"
       top="38%"
       width="92%"
-      height="54vh"
+      height="55vh"
       borderRadius="10px"
       overflow="hidden"
       bgcolor={theme.palette.background.default}
@@ -121,9 +316,9 @@ export default function InfoCard() {
             justifyContent="center"
           >
             <Avatar
-              src={profilePic}
+              src={imageURL}
               alt="Profile Picture"
-              sx={{ width: 200, height: 200, mb: 3, ml: 6 }}
+              sx={{ width: 200, height: 200, mb: 3, ml: 7 }}
             />
             <CloudinaryUploadWidget onUpload={handleOnUpload}>
               {({ open }) => {
@@ -137,7 +332,7 @@ export default function InfoCard() {
                     sx={{
                       position: "absolute",
                       top: "25%",
-                      left: "23%",
+                      left: "23.2%",
                       transform: "translate(-50%, -50%)",
                       width: "50px",
                       height: "50px",
@@ -169,7 +364,7 @@ export default function InfoCard() {
                 value={newUsername}
                 onChange={handleUsernameChange}
                 color="warning"
-                sx={{ ml: 6 }}
+                sx={{ ml: 7 }}
               />
             ) : (
               <>
@@ -226,7 +421,7 @@ export default function InfoCard() {
                   </Typography>
                   <TextField
                     id="bio"
-                    value={bio}
+                    value={userBio}
                     rows={3}
                     onChange={handleBioChange}
                     multiline
@@ -249,7 +444,7 @@ export default function InfoCard() {
                     variant="body2"
                     align="center"
                     color="primary"
-                    sx={{ mb: 3 }}
+                    sx={{ mb: 3, wordWrap: "break-word", maxWidth: "100%" }}
                   >
                     {bio ? bio : "No bio available"}
                   </Typography>
@@ -268,6 +463,7 @@ export default function InfoCard() {
                   <TextField
                     id="email"
                     defaultValue={email}
+                    onChange={handleEmailChange}
                     color="warning"
                     fullWidth
                     sx={{ mb: 2 }}
@@ -283,6 +479,7 @@ export default function InfoCard() {
                   <TextField
                     id="phone"
                     defaultValue={phoneNumber}
+                    onChange={handlePhoneNumChange}
                     color="warning"
                     fullWidth
                     sx={{ mb: 2 }}
@@ -338,7 +535,7 @@ export default function InfoCard() {
                   <CustomButtonWhiteSquare
                     variant="contained"
                     color="primary"
-                    onClick={handleSaveBio}
+                    onClick={handleSaveProfile}
                     text="Save"
                     sx={{ width: 200 }}
                   />
@@ -390,7 +587,7 @@ export default function InfoCard() {
                 <Button onClick={handleClose} color="primary">
                   Cancel
                 </Button>
-                <Button onClick={handleChangePassword} color="primary">
+                <Button onClick={handleSavePassword} color="primary">
                   Save
                 </Button>
               </DialogActions>
