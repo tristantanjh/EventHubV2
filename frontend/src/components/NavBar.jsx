@@ -13,12 +13,14 @@ import {
   alpha,
   Avatar,
   Paper,
+  Typography,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import HistoryIcon from '@mui/icons-material/History';
-import MenuIcon from '@mui/icons-material/Menu';
-import PermIdentityIcon from '@mui/icons-material/PermIdentity';
-import EventIcon from '@mui/icons-material/Event';
+import HistoryIcon from "@mui/icons-material/History";
+import MenuIcon from "@mui/icons-material/Menu";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
+import EventIcon from "@mui/icons-material/Event";
+import AddIcon from "@mui/icons-material/Add";
 import { useAuth } from "../hooks/AuthProvider";
 import theme from "../themes/theme";
 import CustomButtonWhiteSquare from "./CustomButtonWhiteSquare";
@@ -30,6 +32,7 @@ function NavBar() {
   const profilePic = user.profilePic;
   const navigate = useNavigate();
   const location = useLocation();
+  const path = location.pathname;
 
   const handleLogout = async () => {
     try {
@@ -93,6 +96,54 @@ function NavBar() {
                 />
               </a>
             </Box>
+            {path === "/create-event" ? null : (
+              <Box
+                sx={{
+                  mt: 4,
+                  mr: 2,
+                }}
+              >
+                <Paper
+                  elevation={3}
+                  onClick={() => {
+                    navigate("/create-event");
+                  }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "8px 24px 8px 24px",
+                    height: "30px",
+                    cursor: "pointer",
+                    borderRadius: "16px",
+                    backgroundColor: theme.palette.background.secondary,
+                    borderColor: "secondary.main",
+                    boxShadow: 1,
+                    border: 1,
+                    color: theme.palette.secondary.main,
+                    transition: "background-color 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: alpha(
+                        theme.palette.background.secondary,
+                        0.6
+                      ),
+                    },
+                  }}
+                >
+                  <AddIcon sx={{ mr: 1 }} />
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontWeight: 500,
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    Create Event
+                  </Typography>
+                </Paper>
+              </Box>
+            )}
+
             <Box
               sx={{
                 mt: 4,
@@ -136,7 +187,6 @@ function NavBar() {
                   />
                 </Paper>
               </Box>
-              
 
               <Drawer
                 anchor="right"

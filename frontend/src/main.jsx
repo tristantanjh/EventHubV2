@@ -7,6 +7,8 @@ import {
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { ThemeProvider } from "@mui/material/styles";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import theme from "./themes/theme";
 
 import App from "./routes/App.jsx";
@@ -39,7 +41,7 @@ const router = createBrowserRouter([
             children: [
               { path: "/login", element: <Login /> },
               { path: "/register", element: <Register /> },
-            ]
+            ],
           },
         ],
       },
@@ -47,10 +49,10 @@ const router = createBrowserRouter([
         element: <ProtectedLayout />,
         children: [
           { path: "/home", element: <Home /> },
-          { path: "/create-event", element: <CreateEvent />},
+          { path: "/create-event", element: <CreateEvent /> },
           { path: "/profile", element: <Profile /> },
-          { path: "/manage-events", element: <ManageEvents />},
-          { path: "/event-history", element: <EventHistory />},
+          { path: "/manage-events", element: <ManageEvents /> },
+          { path: "/event-history", element: <EventHistory /> },
         ],
       },
     ],
@@ -59,8 +61,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </LocalizationProvider>
   </React.StrictMode>
 );
