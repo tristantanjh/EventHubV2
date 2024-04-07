@@ -19,7 +19,7 @@ export default function DraggableUserItem({ onDrag, userId }) {
       })
       .catch((error) => {
         console.error(error);
-        notify("Failed to fetch user details", "error");
+        notify(<Typography>Failed to fetch user details</Typography>, "error");
       });
   }, []);
 
