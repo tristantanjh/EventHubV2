@@ -26,9 +26,11 @@ const createEvent = async (req, res) => {
       { new: true }
     );
 
-    res
-      .status(201)
-      .json({ message: "Event created successfully", event: savedEvent, user: updatedUser });
+    res.status(201).json({
+      message: "Event created successfully",
+      event: savedEvent,
+      user: updatedUser,
+    });
   } catch (error) {
     console.error(error);
     res
@@ -124,6 +126,27 @@ const unregisterForEvent = async (req, res) => {
   }
 };
 
+const handleUpdateAttendance = async (req, res) => {
+  try {
+    const { eventId, registrants, attendees } = req.body;
+
+    for (let userId of attendees) {
+      await markUserAsAttended({ body: { userId, eventId } }, res);
+    }
+
+    for (let userId of registrants) {
+      await markUserAsUnattended({ body: { userId, eventId } }, res);
+    }
+
+    res.status(200).json({ message: "Attendance updated successfully." });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating attendance." });
+  }
+};
+
 const markUserAsAttended = async (req, res) => {
   try {
     const { userId, eventId } = req.body;
@@ -133,9 +156,7 @@ const markUserAsAttended = async (req, res) => {
 
     // Check if the user is in the event's registrants array
     if (!event.registrants.includes(userId)) {
-      return res
-        .status(400)
-        .json({ message: "User is not registered for this event." });
+      return;
     }
 
     // Remove the user from the event's registrants array and add to attendees array
@@ -149,18 +170,11 @@ const markUserAsAttended = async (req, res) => {
     // Remove the event from the user's registeredEvents array and add to attendedEvents array
     user.attendedEvents.push(eventId);
     user.registeredEvents.pull(eventId);
-    const updatedUser = await user.save();
+    await user.save();
 
-    res.status(200).json({
-      message: "User marked as attended for the event.",
-      updatedEvent,
-      updatedUser,
-    });
+    console.log("User marked as attended for the event.")
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while marking user as attended." });
   }
 };
 
@@ -173,9 +187,7 @@ const markUserAsUnattended = async (req, res) => {
 
     // Check if the user is in the event's attendees array
     if (!event.attendees.includes(userId)) {
-      return res
-        .status(400)
-        .json({ message: "User is not marked as attended for this event." });
+      return;
     }
 
     // Remove the user from the event's attendees array and add back to registeredUsers array
@@ -189,18 +201,12 @@ const markUserAsUnattended = async (req, res) => {
     // Remove the event from the user's attendedEvents array and add back to registeredEvents array
     user.registeredEvents.push(eventId);
     user.attendedEvents.pull(eventId);
-    const updatedUser = await user.save();
+    await user.save();
 
-    res.status(200).json({
-      message: "User marked as unattended for the event.",
-      updatedEvent,
-      updatedUser,
-    });
+    console.log("User marked as unattended for the event.");
+
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while marking user as unattended." });
   }
 };
 
@@ -246,7 +252,6 @@ export {
   getEventWithId,
   registerForEvent,
   unregisterForEvent,
-  markUserAsAttended,
-  markUserAsUnattended,
+  handleUpdateAttendance,
   deleteEvent,
 };

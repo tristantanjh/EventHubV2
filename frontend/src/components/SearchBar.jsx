@@ -12,15 +12,19 @@ export default function SearchBar() {
       <TextField
         variant="outlined"
         onChange={(e) => {
-          onSearch(e.target.value)
+          onSearch(e.target.value);
         }}
         placeholder="Search for events..."
         sx={{
           width: "580px",
           borderRadius: "10px",
           "& .MuiOutlinedInput-root": {
-            borderRadius: "8px", 
+            borderRadius: "8px",
           },
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+            {
+              borderColor: theme.palette.background.secondary,
+            },
         }}
         InputProps={{
           startAdornment: (

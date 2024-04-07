@@ -73,39 +73,39 @@ export default function CreateEvent() {
 
   const validateCreateEvent = () => {
     if (title === "") {
-      notify("Please enter a title", "error");
+      notify(<Typography>Please enter a title</Typography>, "error");
       return;
     }
     if (location === "") {
-      notify("Please enter a location", "error");
+      notify(<Typography>Please enter a location</Typography>, "error");
       return;
     }
     if (description === "") {
-      notify("Please enter a description", "error");
+      notify(<Typography>Please enter a description</Typography>, "error");
       return;
     }
     if (eventDate === null) {
-      notify("Please enter an event date", "error");
+      notify(<Typography>Please enter an event date</Typography>, "error");
       return;
     }
     if (deadlineDate === null) {
-      notify("Please enter a deadline date", "error");
+      notify(<Typography>Please enter a deadline date</Typography>, "error");
       return;
     }
     if (eventDate < new Date()) {
-      notify("Please enter a future event date", "error");
+      notify(<Typography>Please enter a future event date</Typography>, "error");
       return;
     }
     if (deadlineDate < new Date()) {
-      notify("Please enter a future deadline date", "error");
+      notify(<Typography>Please enter a future deadline date</Typography>, "error");
       return;
     }
     if (deadlineDate > eventDate) {
-      notify("Deadline date must be before event date", "error");
+      notify(<Typography>Deadline date must be before event date</Typography>, "error");
       return;
     }
     if (imageURL === "empty") {
-      notify("Please upload an event photo", "error");
+      notify(<Typography>Please upload an event photo</Typography>, "error");
       return;
     }
     setOpenModal(true);

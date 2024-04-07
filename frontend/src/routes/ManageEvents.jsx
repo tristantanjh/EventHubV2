@@ -6,7 +6,6 @@ import EventCard from "../components/EventCard";
 
 export default function ManageEvents() {
   const { user } = useAuth();
-  console.log(user.hostedEvents)
 
   return (
     <>
@@ -72,9 +71,8 @@ export default function ManageEvents() {
           },
         }}>
         {user.hostedEvents.length === 0 ? (
-          <Typography>
-            You have not hosted any events yet. Start your journey with EventHub
-            by hosting your first event!
+          <Typography color="primary" fontWeight="bold">
+            You have not hosted any events yet. Begin your adventure with EventHub by hosting your inaugural event!
           </Typography>
         ) : (
           user.hostedEvents.map((eventId) => (

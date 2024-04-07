@@ -24,8 +24,8 @@ import { useState, useEffect } from "react";
 import CustomButton from "../components/CustomButton.jsx";
 import axios from "axios";
 import { validateForm } from "../utils/utils.js";
-import { toast } from "react-toastify";
 import bcrypt from 'bcryptjs';
+import { notify } from "../utils/utils.js";
 
 export default function Register() {
   const { login } = useAuth();
@@ -100,22 +100,15 @@ export default function Register() {
   };
 
   useEffect(() => {
-    const notify = () => {
-      if (errors.username) {
-        toast(errors.username, { type: "error" });
-      }
-      if (errors.email) {
-        toast(errors.email, { type: "error" });
-      }
-      if (errors.password) {
-        toast(errors.password, { type: "error" });
-      }
-      if (errors) {
-        toast(errors, { type: "error" })
-      }
-    };
-
-    notify();
+    if (errors.username) {
+      notify(<Typography>{errors.username}</Typography>, "error");
+    }
+    if (errors.email) {
+      notify(<Typography>{errors.email}</Typography>, "error");
+    }
+    if (errors.password) {
+      notify(<Typography>{errors.password}</Typography>, "error");
+    }
   }, [errors]);
 
   const handleChange = (e) => {

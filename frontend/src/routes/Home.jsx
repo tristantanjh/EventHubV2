@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Box, Divider } from "@mui/material";
 import { useAuth } from "../hooks/AuthProvider.jsx";
-import axios from "axios";
+import axios, { all } from "axios";
 import EventCard from "../components/EventCard";
 import theme from "../themes/theme.js";
 import { useSearch } from "../hooks/SearchProvider.jsx";
 
 export default function Home() {
   const [allEvents, setAllEvents] = useState([]);
-  const { eventList, setEventList, setFullList, onSearch } = useSearch();
+  const { eventList, setEventList, setFullList } = useSearch();
 
   const fetchEvents = async () => {
     try {
@@ -98,9 +98,14 @@ export default function Home() {
             },
           }}
         >
-          {eventList.length === 0 ? (
-            <Typography>
+          {allEvents.length == 0 && (
+            <Typography color="primary" fontWeight="bold">
               There are no events available at the moment. Create one now!
+            </Typography>
+          )}
+          {eventList.length === 0 ? (
+            <Typography color="primary" fontWeight="bold">
+              There are no events matching your search. Create one now!
             </Typography>
           ) : (
             eventList.map((event) => (

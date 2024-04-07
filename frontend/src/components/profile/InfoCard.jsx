@@ -22,6 +22,7 @@ import CloudinaryUploadWidget from "../CloudinaryUploadWidget";
 import swal from "sweetalert";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { notify } from "../../utils/utils";
 import bcrypt from "bcryptjs";
 
 export default function InfoCard() {
@@ -42,7 +43,7 @@ export default function InfoCard() {
     phoneNumber: "",
   });
 
-  const [passwordError, setPasswordError] = useState({});
+  const [passwordError, setPasswordError] = useState("");
 
   function handleOnUpload(error, result, widget) {
     if (error) {
@@ -164,7 +165,10 @@ export default function InfoCard() {
       .then((response) => {
         console.log("Profile updated successfully:", response.data);
         updateUser(response.data.updatedUser);
-        toast("Profile updated successfully!", { type: "success" });
+        notify(
+          <Typography>Profile updated successfully!</Typography>,
+          "success"
+        );
         setEditMode(false);
       })
       .catch((error) => {
@@ -180,28 +184,28 @@ export default function InfoCard() {
   };
 
   const validatePassword = (data) => {
-    const newErrors = { password: "" };
+    let newErrors = "";
     let valid = true;
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
     if (!data.newPassword || !passwordRegex.test(data.newPassword)) {
-      newErrors.password =
+      newErrors =
         "Password must be at least 6 characters with at least one uppercase and one lowercase letter";
       valid = false;
     }
 
     if (data.newPassword === "") {
-      newErrors.password = "Password is required.";
+      newErrors = "Password is required.";
       valid = false;
     }
 
     if (data.verifyPassword === "") {
-      newErrors.password = "Password is required.";
+      newErrors = "Password is required.";
       valid = false;
     }
 
     if (data.newPassword !== data.verifyPassword) {
-      newErrors.password = "Passwords do not match.";
+      newErrors = "Passwords do not match.";
       valid = false;
     }
 
@@ -215,7 +219,7 @@ export default function InfoCard() {
     });
 
     if (!valid) {
-      setPasswordError(newErrors.password);
+      setPasswordError(newErrors);
       return;
     }
 
@@ -235,7 +239,10 @@ export default function InfoCard() {
       )
       .then((response) => {
         console.log("Password updated successfully:", response.data);
-        toast("Password updated successfully!", { type: "success" });
+        notify(
+          <Typography>Password updated successfully!</Typography>,
+          "success"
+        );
         updateUser(response.data.updatedUser);
         setNewPassword(""); // Clear the input fields
         setVerifyPassword("");
@@ -250,33 +257,22 @@ export default function InfoCard() {
   };
 
   useEffect(() => {
-    const notify = () => {
-      if (errors.username) {
-        toast(errors.username, { type: "error" });
-      }
-      if (errors.email) {
-        toast(errors.email, { type: "error" });
-      }
-      if (errors.phoneNumber) {
-        toast(errors.phoneNumber, { type: "error" });
-      }
-      if (errors) {
-        toast(errors, { type: "error" });
-      }
-    };
-
-    notify();
+    if (errors.username) {
+      notify(<Typography>{errors.username}</Typography>, "error");
+    }
+    if (errors.email) {
+      notify(<Typography>{errors.email}</Typography>, "error");
+    }
+    if (errors.phoneNumber) {
+      notify(<Typography>{errors.phoneNumber}</Typography>, "error");
+    }
   }, [errors]);
 
   useEffect(() => {
-    const notify = () => {
-      if (passwordError) {
-        toast(passwordError, { type: "error" });
-        setPasswordError({});
-      }
-    };
-
-    notify();
+    if (passwordError) {
+      notify(<Typography>{passwordError}</Typography>, "error");
+      setPasswordError("");
+    }
   }, [passwordError]);
 
   return (

@@ -23,7 +23,6 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import theme from "../themes/theme";
 import { useAuth } from "../hooks/AuthProvider";
 import CustomButtonWhiteSquare from "./CustomButtonWhiteSquare";
-import { toast } from "react-toastify";
 import { notify } from "../utils/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -41,6 +40,7 @@ export default function EventCard(props) {
   const [participants, setParticipants] = useState(0);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
+  const [openUnregisterModal, setOpenUnregisterModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,13 +97,13 @@ export default function EventCard(props) {
         },
       })
       .then((response) => {
-        notify("Event deleted successfully", "success");
+        notify(<Typography>Event deleted successfully</Typography>, "success");
         updateUser(response.data.user);
         setOpenDeleteModal(false);
       })
       .catch((error) => {
         console.log(error);
-        notify("Error deleting event", "error");
+        notify(<Typography>Error deleting event</Typography>, "error");
       });
   };
 
@@ -114,14 +114,41 @@ export default function EventCard(props) {
         userId: user._id,
       })
       .then((response) => {
-        notify("Event joined successfully", "success");
+        notify(
+          <Typography>Event joined successfully, let's gooooo!</Typography>,
+          "success"
+        );
         updateUser(response.data.updatedUser);
         setOpenInfoModal(false);
         navigate("/event-history");
       })
       .catch((error) => {
         console.log(error);
-        notify("Error joining event", "error");
+        notify(<Typography>Error joining event</Typography>, "error");
+      });
+  };
+
+  const handleUnregisterEvent = () => {
+    axios
+      .put(`http://localhost:3000/api/unregisterForEvent`, {
+        eventId: props.eventId,
+        userId: user._id,
+      })
+      .then((response) => {
+        notify(
+          <Typography>We hope to see you at another event soon!</Typography>,
+          "success"
+        );
+        updateUser(response.data.updatedUser);
+        setOpenInfoModal(false);
+        navigate("/event-history");
+      })
+      .catch((error) => {
+        console.log(error);
+        notify(
+          <Typography>Error unregistering from event</Typography>,
+          "error"
+        );
       });
   };
 
@@ -182,8 +209,11 @@ export default function EventCard(props) {
                 justifyContent: "center",
                 borderRadius: "30px",
                 maxHeight: "5px",
-                color: "secondary.main",
-                backgroundColor: theme.palette.background.tertiary,
+                color: deadline > 0 ? "secondary.main" : "text.disabled",
+                backgroundColor:
+                  deadline > 0
+                    ? theme.palette.background.tertiary
+                    : "text.disabled",
               }}
             >
               {deadline > 0 ? (
@@ -199,8 +229,15 @@ export default function EventCard(props) {
                   }}
                 />
               )}
-              <Typography variant="body2" color="secondary">
-                {deadline} {deadline === 1 ? "day" : "days"} left
+              <Typography
+                variant="body2"
+                sx={{
+                  color: deadline > 0 ? "secondary.main" : "text.disabled",
+                }}
+              >
+                {deadline > 0
+                  ? `${deadline} day${deadline === 1 ? "" : "s"} left`
+                  : "0 days left"}
               </Typography>
             </Paper>
             <Box
@@ -318,6 +355,25 @@ export default function EventCard(props) {
                 text="Delete"
               />
             ) : null}
+            {props.unregister && deadline > 0 ? (
+              <CustomButtonWhiteSquare
+                onClick={() => setOpenUnregisterModal(true)}
+                sx={{
+                  fontWeight: "bold",
+                  letterSpacing: "1px",
+                  backgroundColor: theme.palette.background.secondary,
+                  color: "secondary.main",
+                  transition: "background-color 0.3s ease",
+                  "&:hover": {
+                    backgroundColor: alpha(
+                      theme.palette.background.secondary,
+                      0.6
+                    ),
+                  },
+                }}
+                text="Unregister"
+              />
+            ) : null}
           </Box>
         </Box>
       </Grid>
@@ -367,6 +423,44 @@ export default function EventCard(props) {
             }}
           >
             DELETE IT!
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openUnregisterModal}
+        onClose={() => setOpenUnregisterModal(false)}
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: "bold",
+          }}
+        >
+          Confirm Event Unregistration
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to unregister for this event?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setOpenUnregisterModal(false)}
+            color="primary"
+            sx={{
+              fontWeight: "normal",
+            }}
+          >
+            I made a mistake...
+          </Button>
+          <Button
+            onClick={handleUnregisterEvent}
+            sx={{
+              fontWeight: "bold",
+              color: theme.palette.background.secondary,
+            }}
+          >
+            Unregister Me!
           </Button>
         </DialogActions>
       </Dialog>
@@ -508,7 +602,7 @@ export default function EventCard(props) {
         <DialogActions>
           {hostName === user.username ? (
             <Button
-              onClick={() => navigate(`/updateAttendance/${props.eventId}`)}
+              onClick={() => navigate(`/update-attendance/${props.eventId}`)}
               color="primary"
               sx={{
                 fontWeight: "normal",
@@ -517,8 +611,13 @@ export default function EventCard(props) {
               Update Attendance
             </Button>
           ) : user.registeredEvents.includes(props.eventId) ? (
-            <Typography variant="body1" color="textSecondary" marginBottom={1} marginRight={1}>
-              You are already registered!
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              marginBottom={1}
+              marginRight={1}
+            >
+              You are already part of this event!
             </Typography>
           ) : (
             <Button

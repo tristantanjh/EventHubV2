@@ -80,7 +80,7 @@ function NavBar() {
                 px: 0,
               }}
             >
-              <a href="/">
+              <a href="/home">
                 <Box
                   display={{ md: "flex" }}
                   id="image"

@@ -27,6 +27,10 @@ export const validateForm = (formData) => {
 };
 
 export const notify = (message, toastType) => {
-  toast(message, { type: toastType });
+  toast(message, {
+    type: toastType,
+    closeOnClick: true,
+    autoClose: 3000,
+    pauseOnFocusLoss: false,
+  });
 };
-

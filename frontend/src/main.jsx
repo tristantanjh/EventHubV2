@@ -20,6 +20,7 @@ import ErrorPage from "./routes/ErrorPage.jsx";
 import ManageEvents from "./routes/ManageEvents.jsx";
 import EventHistory from "./routes/EventHistory.jsx";
 import CreateEvent from "./routes/CreateEvent.jsx";
+import UpdateAttendance from "./routes/UpdateAttendance.jsx";
 
 import AuthLayout from "./layout/AuthLayout.jsx";
 import PublicLayout from "./layout/PublicLayout.jsx";
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
           { path: "/profile", element: <Profile /> },
           { path: "/manage-events", element: <ManageEvents /> },
           { path: "/event-history", element: <EventHistory /> },
+          {
+            path: "/update-attendance/:eventId",
+            element: <UpdateAttendance />,
+          },
         ],
       },
     ],
@@ -61,10 +66,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <ThemeProvider theme={theme}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </LocalizationProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <ThemeProvider theme={theme}>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </LocalizationProvider>
   </React.StrictMode>
 );

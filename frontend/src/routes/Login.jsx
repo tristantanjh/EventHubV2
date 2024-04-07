@@ -19,6 +19,7 @@ import Copyright from "../components/Copyright.jsx";
 import CustomButton from "../components/CustomButton.jsx";
 import theme from "../themes/theme.js";
 import { toast } from "react-toastify";
+import { notify } from "../utils/utils.js";
 import { validateForm } from "../utils/utils.js";
 import bcrypt from "bcryptjs";
 
@@ -67,6 +68,8 @@ export default function Login() {
           response.data.user.password
         );
 
+        // const passwordMatch = plainTextPassword === response.data.user.password;
+
         if (passwordMatch === false) {
           console.error("Invalid password.");
           setErrors({ password: "Invalid password." });
@@ -102,16 +105,13 @@ export default function Login() {
   };
 
   useEffect(() => {
-    const notify = () => {
-      if (errors.password) {
-        toast(errors.password, { type: "error" });
-      }
-      if (errors) {
-        toast(errors, { type: "error" });
-      }
-    };
+    if (errors.password) {
+      notify(<Typography>{errors.password}</Typography>, "error");
+    }
+    if (errors.email) {
+      notify(<Typography>{errors.email}</Typography>, "error");
+    }
 
-    notify();
   }, [errors]);
 
   return (

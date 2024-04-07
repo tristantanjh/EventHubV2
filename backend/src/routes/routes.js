@@ -15,8 +15,7 @@ import {
   getEventWithId,
   registerForEvent,
   unregisterForEvent,
-  markUserAsAttended,
-  markUserAsUnattended,
+  handleUpdateAttendance,
   deleteEvent,
 } from "../controllers/eventController.js";
 
@@ -52,9 +51,7 @@ APIrouter.put("/registerForEvent", registerForEvent);
 
 APIrouter.put("/unregisterForEvent", unregisterForEvent);
 
-APIrouter.put("/markUserAsAttended", markUserAsAttended);
-
-APIrouter.put("/markUserAsUnattended", markUserAsUnattended);
+APIrouter.put("/handleUpdateAttendance", handleUpdateAttendance);
 
 APIrouter.delete("/deleteEvent", deleteEvent);
 
