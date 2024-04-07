@@ -37,6 +37,18 @@ const createEvent = async (req, res) => {
   }
 };
 
+const getAllEvents = async (req, res) => {
+  try {
+    const events = await Event.find();
+    res.status(200).json({ events });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving the events." });
+  }
+};
+
 const getEventWithId = async (req, res) => {
   try {
     const eventId = req.query.eventId;
@@ -230,6 +242,7 @@ const deleteEvent = async (req, res) => {
 
 export {
   createEvent,
+  getAllEvents,
   getEventWithId,
   registerForEvent,
   unregisterForEvent,

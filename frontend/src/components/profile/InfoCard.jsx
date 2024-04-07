@@ -272,6 +272,7 @@ export default function InfoCard() {
     const notify = () => {
       if (passwordError) {
         toast(passwordError, { type: "error" });
+        setPasswordError({});
       }
     };
 

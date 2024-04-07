@@ -24,6 +24,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useAuth } from "../hooks/AuthProvider";
 import theme from "../themes/theme";
 import CustomButtonWhiteSquare from "./CustomButtonWhiteSquare";
+import SearchBar from "./SearchBar.jsx";
 
 function NavBar() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -95,6 +96,14 @@ function NavBar() {
                   alt="EventHub Logo."
                 />
               </a>
+              <Box
+                sx={{
+                  mt: 4,
+                  mr: 2,
+                }}
+              >
+                {path === "/home" ? <SearchBar /> : null}
+              </Box>
             </Box>
             {path === "/create-event" ? null : (
               <Box
@@ -113,7 +122,7 @@ function NavBar() {
                     alignItems: "center",
                     justifyContent: "center",
                     padding: "8px 24px 8px 24px",
-                    height: "30px",
+                    height: "42px",
                     cursor: "pointer",
                     borderRadius: "8px",
                     backgroundColor: theme.palette.background.secondary,
@@ -154,7 +163,7 @@ function NavBar() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: "16px",
+                    borderRadius: "8px",
                     borderColor: theme.palette.background.secondary,
                     p: "4px",
                     height: { xs: "38px", sm: "50px" },

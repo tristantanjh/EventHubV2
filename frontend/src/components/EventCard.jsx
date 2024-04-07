@@ -60,6 +60,10 @@ export default function EventCard(props) {
         const daysLeft = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
         setDeadline(daysLeft > 0 ? daysLeft : 0);
         setDeadlineDate(response.data.event.deadline);
+        fetchUser(response.data.event.host).then((user) => {
+          setHost(user._id);
+          setHostName(user.username);
+        });
         setHost(response.data.event.host);
         setLocation(response.data.event.location);
         setEventImage(response.data.event.eventPic);
@@ -69,18 +73,21 @@ export default function EventCard(props) {
       });
   }, [props.eventId]);
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:3000/api/getUserWithId`, {
-        params: {
-          userId: host,
-        },
-      })
-      .then((response) => {
-        setHostName(response.data.user.username);
-        console.log(response.data);
-      });
-  }, [host]);
+  const fetchUser = async (userId) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/getUserWithId",
+        {
+          params: {
+            userId: userId,
+          },
+        }
+      );
+      return response.data.user;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleDeleteEvent = () => {
     axios
@@ -90,7 +97,6 @@ export default function EventCard(props) {
         },
       })
       .then((response) => {
-        console.log(response);
         notify("Event deleted successfully", "success");
         updateUser(response.data.user);
         setOpenDeleteModal(false);
@@ -101,7 +107,23 @@ export default function EventCard(props) {
       });
   };
 
-  const handleJoinEvent = () => {};
+  const handleJoinEvent = () => {
+    axios
+      .put(`http://localhost:3000/api/registerForEvent`, {
+        eventId: props.eventId,
+        userId: user._id,
+      })
+      .then((response) => {
+        notify("Event joined successfully", "success");
+        updateUser(response.data.updatedUser);
+        setOpenInfoModal(false);
+        navigate("/event-history");
+      })
+      .catch((error) => {
+        console.log(error);
+        notify("Error joining event", "error");
+      });
+  };
 
   return (
     <Grid
@@ -494,6 +516,10 @@ export default function EventCard(props) {
             >
               Update Attendance
             </Button>
+          ) : user.registeredEvents.includes(props.eventId) ? (
+            <Typography variant="body1" color="textSecondary" marginBottom={1} marginRight={1}>
+              You are already registered!
+            </Typography>
           ) : (
             <Button
               onClick={handleJoinEvent}

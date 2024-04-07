@@ -11,6 +11,7 @@ import {
 } from "../controllers/userController.js";
 import {
   createEvent,
+  getAllEvents, 
   getEventWithId,
   registerForEvent,
   unregisterForEvent,
@@ -42,6 +43,8 @@ APIrouter.get("/getUserWithEmail", getUserWithEmail);
 //////////////////////////////////////////////////  event methods ///////////////////////////////////////////////////
 
 APIrouter.post("/createEvent", createEvent);
+
+APIrouter.get("/getAllEvents", getAllEvents);
 
 APIrouter.get("/getEventWithId", getEventWithId);
 
