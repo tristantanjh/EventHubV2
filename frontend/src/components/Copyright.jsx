@@ -18,6 +18,8 @@ export default function Copyright(props) {
       {"Copyright © "}
       <Link
         color="inherit"
+        target="_blank"
+        rel="noopener noreferrer"
         href="https://github.com/tristantanjh/EventHubV2"
         sx={{
           fontFamily: theme.typography.fontFamily,

@@ -15,6 +15,8 @@ import App from "./routes/App.jsx";
 import Home from "./routes/Home.jsx";
 import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
+import TermsAndConditions from "./routes/TermsAndConditions.jsx";
+import PrivatePolicy from "./routes/PrivatePolicy.jsx";
 import Profile from "./routes/Profile.jsx";
 import ErrorPage from "./routes/ErrorPage.jsx";
 import ManageEvents from "./routes/ManageEvents.jsx";
@@ -46,6 +48,8 @@ const router = createBrowserRouter([
           },
         ],
       },
+      { path: "/terms-and-conditions", element: <TermsAndConditions /> },
+      { path: "/private-policy", element: <PrivatePolicy /> },
       {
         element: <ProtectedLayout />,
         children: [
@@ -66,10 +70,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <ThemeProvider theme={theme}>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </LocalizationProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </LocalizationProvider>
   </React.StrictMode>
 );
