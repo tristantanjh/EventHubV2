@@ -82,7 +82,7 @@ export default function UpdateAttendance() {
         attendees: itemsRight,
       })
       .then((response) => {
-        notify("Successfully updated attendance", "success");
+        notify(<Typography>Successfully updated attendance!</Typography>, "success");
         setOriginalLeft(itemsLeft);
         setOriginalRight(itemsRight);
       })

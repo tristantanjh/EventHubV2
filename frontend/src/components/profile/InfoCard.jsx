@@ -550,7 +550,13 @@ export default function InfoCard() {
                     color="primary"
                     onClick={() => setOpenModal(true)}
                     text="Change Password"
-                    sx={{ width: 200 }}
+                    sx={{
+                      width: 200,
+                      position: "absolute",
+                      top: "8%",
+                      left: "91.5%",
+                      transform: "translate(-50%, -50%)",
+                    }}
                   />
                 </Box>
               ) : (
