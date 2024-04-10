@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../assets/logo.png";
 
 import {
@@ -25,11 +25,12 @@ import { useAuth } from "../hooks/AuthProvider";
 import theme from "../themes/theme";
 import CustomButtonWhiteSquare from "./CustomButtonWhiteSquare";
 import SearchBar from "./SearchBar.jsx";
+import axios from "axios";
 
 function NavBar() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const { logout } = useAuth();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const profilePic = user.profilePic;
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,6 +41,28 @@ function NavBar() {
       logout();
     } catch (error) {
       console.error("Error logging out:", error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(fetchUser, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/getUserWithId",
+        {
+          params: {
+            userId: user._id,
+          },
+        }
+      );
+      setUser(response.data.user);
+    } catch (error) {
+      console.error(error);
     }
   };
 

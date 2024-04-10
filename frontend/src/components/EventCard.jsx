@@ -610,7 +610,7 @@ export default function EventCard(props) {
             >
               Update Attendance
             </Button>
-          ) : user.registeredEvents.includes(props.eventId) ? (
+          ) : user.registeredEvents.includes(props.eventId) || user.attendedEvents.includes(props.eventId) ? (
             <Typography
               variant="body1"
               color="textSecondary"
