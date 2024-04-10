@@ -1,16 +1,47 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box, Divider } from "@mui/material";
+import { Typography, Box, Divider, Paper } from "@mui/material";
 import { useAuth } from "../hooks/AuthProvider.jsx";
 import axios, { all } from "axios";
 import EventCard from "../components/EventCard";
 import theme from "../themes/theme.js";
 import { useSearch } from "../hooks/SearchProvider.jsx";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 export default function Home() {
   const [allEvents, setAllEvents] = useState([]);
+  const [updatedEventList, setUpdatedEventList] = useState([]);
+  const [showRefreshPopup, setShowRefreshPopup] = useState(true);
   const { eventList, setEventList, setFullList } = useSearch();
 
   const fetchEvents = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/getAllEvents"
+      );
+      const events = response.data.events;
+      const sortedEvents = events
+        .slice()
+        .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+        .filter((event) => new Date(event.deadline) > new Date());
+      setUpdatedEventList(sortedEvents);
+      setAllEvents(sortedEvents);
+      setEventList(sortedEvents);
+      setFullList(sortedEvents);
+      setShowRefreshPopup(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+
+    const interval = setInterval(fetchNewEvents, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchNewEvents = async () => {
     try {
       const response = await axios.get(
         "http://localhost:3000/api/getAllEvents"
@@ -21,17 +52,21 @@ export default function Home() {
         .slice()
         .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
         .filter((event) => new Date(event.deadline) > new Date());
-      setAllEvents(sortedEvents);
-      setEventList(sortedEvents);
-      setFullList(sortedEvents);
+      setUpdatedEventList(sortedEvents);
+
+      if (updatedEventList.length !== allEvents.length) {
+        setShowRefreshPopup(true);
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    if (updatedEventList.length !== allEvents.length) {
+      setShowRefreshPopup(true);
+    }
+  }, [updatedEventList]);
 
   return (
     <>
@@ -98,6 +133,34 @@ export default function Home() {
             },
           }}
         >
+          {showRefreshPopup ? (
+            <Paper
+              elevation={3}
+              style={{
+                padding: "5px 20px 5px 20px",
+                borderRadius: "90px",
+                textAlign: "center",
+                position: "absolute",
+                backgroundColor: theme.palette.background.tertiary,
+                bottom: "82%",
+                left: "50%",
+                transform: "translate(-50%, 50%)",
+                zIndex: 1000,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                gap: "10px",
+                cursor: "pointer",
+              }}
+              onClick={() => fetchEvents()}
+            >
+              <RefreshIcon color="secondary" />
+              <Typography variant="h6" color="secondary">
+                New Events Found!
+              </Typography>
+            </Paper>
+          ) : null}
           {allEvents.length == 0 && (
             <Typography color="primary" fontWeight="bold">
               There are no events available at the moment. Create one now!
