@@ -46,6 +46,10 @@ export default function Register() {
   });
 
   useEffect(() => {
+    document.title = "Register | EventHub";
+  }, []);
+
+  useEffect(() => {
     console.log(imageURL); //shows true - updated state
   }, [imageURL]);
 

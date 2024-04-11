@@ -55,6 +55,8 @@ export default function UpdateAttendance() {
   };
 
   useEffect(() => {
+    document.title = "Update Attendance | EventHub";
+
     axios
       .get(`http://localhost:3000/api/getEventWithId`, {
         params: {

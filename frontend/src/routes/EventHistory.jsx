@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Divider, Typography } from "@mui/material";
 import theme from "../themes/theme";
 import { useAuth } from "../hooks/AuthProvider";
@@ -8,6 +8,10 @@ import CustomButtonWhiteSquare from "../components/CustomButtonWhiteSquare";
 export default function EventHistory() {
   const { user } = useAuth();
   const [registered, setRegistered] = useState(true);
+
+  useEffect(() => {
+    document.title = "My Previous Events | EventHub";
+  }, []);
 
   return (
     <>

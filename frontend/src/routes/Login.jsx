@@ -38,6 +38,11 @@ export default function Login() {
     password: "",
   });
 
+  useEffect(() => {
+    document.title = "Login | EventHub";
+  }, []);
+
+
   const handleClickShowPassword = (event) => {
     event.preventDefault();
     setShowPassword((show) => !show);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import theme from "../themes/theme";
 import {
   Grid,
@@ -33,6 +33,10 @@ export default function CreateEvent() {
   const [description, setDescription] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Create New Event | EventHub";
+  }, []);
 
   function handleOnUpload(error, result, widget) {
     if (error) {

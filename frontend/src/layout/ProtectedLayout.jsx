@@ -4,12 +4,14 @@ import React from "react";
 import NavBar from "../components/NavBar";
 import theme from "../themes/theme";
 import { SearchProvider } from "../hooks/SearchProvider";
+import { notify } from "../utils/utils";
 
 export default function ProtectedLayout() {
   const { user } = useAuth();
 
   if (!user) {
     console.log("Unauthorised");
+    notify("Please login first!", "error");
     return <Navigate to="/login" />;
   }
 

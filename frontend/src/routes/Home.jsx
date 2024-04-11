@@ -35,6 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchEvents();
+    document.title = "EventHub";
 
     const interval = setInterval(fetchNewEvents, 3000);
 

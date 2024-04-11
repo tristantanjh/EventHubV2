@@ -7,6 +7,10 @@ import EventCard from "../components/EventCard";
 export default function ManageEvents() {
   const { user } = useAuth();
 
+  useEffect(() => {
+    document.title = "Manage My Events | EventHub";
+  }, []);
+
   return (
     <>
       <Typography

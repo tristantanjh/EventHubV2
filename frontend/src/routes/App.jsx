@@ -9,6 +9,10 @@ import CustomButtonWhiteSquare from "../components/CustomButtonWhiteSquare";
 export default function App() {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = "EventHub";
+  }, []);
+
   return (
     <Grid
       container
