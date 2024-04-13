@@ -100,7 +100,7 @@ const editProfile = async (req, res) => {
     if (existingUser && existingUser._id.toString() !== user._id.toString()) {
       return res.status(400).json({ error: "Username is already taken." });
     }
-    
+
     if (existingEmail && existingEmail._id.toString() !== user._id.toString()) {
       return res.status(400).json({ error: "Email is already taken." });
     }
@@ -115,9 +115,7 @@ const editProfile = async (req, res) => {
     if (phoneNumber) {
       user.phoneNumber = phoneNumber;
     }
-    if (bio) {
-      user.bio = bio;
-    }
+    user.bio = bio;
 
     // Save the updated user
     const updatedUser = await user.save();
@@ -150,11 +148,9 @@ const editProfilePic = async (req, res) => {
       .json({ message: "Profile Picture updated successfully.", updatedUser });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: "An error occurred while updating the profile picture.",
-      });
+    res.status(500).json({
+      message: "An error occurred while updating the profile picture.",
+    });
   }
 };
 
