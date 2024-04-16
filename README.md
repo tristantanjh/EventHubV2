@@ -1,4 +1,4 @@
-<img src="/EMS/EMS-war/web/assets/images/logo.png" alt="EventHub logo" title="EventHub" align="right" height="80" />
+<img src="/frontend/src/assets/logo.png" alt="EventHub logo" title="EventHub" align="right" height="80" />
 
 # EventHubV2 <br/>
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
